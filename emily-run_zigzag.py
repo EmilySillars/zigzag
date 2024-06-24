@@ -3,8 +3,8 @@ from zigzag.visualization.results.print_mapping import print_mapping
 from zigzag.visualization.graph.memory_hierarchy import visualize_memory_hierarchy_graph # debugging only
 
 # mapping= "zigzag/inputs/mapping/emily-gemm.yaml" # gives ex 10 output
-#accelerator = "zigzag/inputs/hardware/gemm.yaml" # gives ex 10 output
-mapping= "zigzag/inputs/mapping/emily-snitch-cc-mapping.yaml" # gives ex 10 output
+# accelerator = "zigzag/inputs/hardware/gemm.yaml" # gives ex 10 output
+mapping= "zigzag/inputs/mapping/emily-snitch-cc-mapping.yaml"
 accelerator = "zigzag/inputs/hardware/emily-snitch-riscv32imafd.yaml"
 # takes in workload generated from a run of xdsl_opt_main.py
 workload = "emily-workload.yaml"
