@@ -140,6 +140,6 @@ zigzag.opt.loma.LomaEngine.NoValidLoopOrderingFoundException: No valid loop orde
 
 - From [tpu_like.yaml](zigzag/inputs/hardware/tpu_like.yaml), how does zigzag know that the memory hierarchy looks like the following?
 
-  ![tpu_like.png](/home/hoppip/zigzag/tpu_like.png)
+  ![tpu_like.png](tpu_like.png)
 
 - **why isn't `rf_128B` connectd to `sram_2MB` like `rf_2B` is?**
