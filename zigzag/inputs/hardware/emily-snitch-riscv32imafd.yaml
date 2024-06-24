@@ -1,6 +1,7 @@
 name: snitch-riscv32imafd
 
 memories:
+  # I should have 30 more of these register memories defined, right? One each for x2 - x31?
   reg_x1:
     size: 32
     r_bw: 32
@@ -23,6 +24,7 @@ memories:
         tl: r_port_1
     served_dimensions: [D1]
 
+# TCDM
   l1:
     size: 128000
     r_bw: 64
@@ -46,6 +48,7 @@ memories:
         tl: r_port_1
     served_dimensions: [D1]
 
+# Last level memory
   l3:
     size: 2147483648
     r_bw: 512
