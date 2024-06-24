@@ -143,7 +143,7 @@ outputs*/*.json
 
 # result png files
 outputs*/*.png
-
+emily-zigzag-outputs/*
 
 # docs makefile and make.bat
 docs/Makefile
