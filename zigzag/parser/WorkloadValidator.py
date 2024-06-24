@@ -22,6 +22,7 @@ class WorkloadValidator:
         "MaxPool",
         "AveragePool",
         "GlobalAveragePool",
+        "MatMul", # emily added
     ]
 
     # Schema for a single layer, UpgradeValidator extrapolates to list of layers

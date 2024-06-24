@@ -1,0 +1,48 @@
+- id: 0 # conv1 stride 2
+  name: matmul_104_104  # name can be used to specify mapping
+  operator_type: MatMul  # operator_type can be used to specify mapping
+  equation: O[a][b]+=I[a][c]*W[c][b]
+  dimension_relations: []
+  loop_dims: [A,B,C]
+  loop_sizes: [104, 104, 104]
+  operand_precision:
+    W: 8
+    I: 8
+    O: 32
+    O_final: 32
+  operand_source:
+    I: 0
+    W: 0
+
+
+
+# As python dictionary:
+# workload = {
+#     0: {
+#         "operator_type": "default",
+#         "equation": "O[d0][d1] += I[d0][d2] * W[d2][d1]",
+#         "dimension_relations": [],
+#         "loop_dim_size": {"D0": 104, "D1": 104, "D2": 104},
+#         "operand_precision": {"O": 32, "O_final": 32, "W": 8, "I": 8},
+#         "operand_source": {"W": [], "I": []},
+#         "constant_operands": ["I", "W"],
+#         "padding": {"D0": (0, 0), "D2": (0, 0)},
+#     }
+# }
+
+# For reference:
+# - id: 0 # conv1 stride 2
+#   name: example_name_of_layer0  # name can be used to specify mapping
+#   operator_type: Conv  # operator_type can be used to specify mapping
+#   equation: O[b][k][oy][ox]+=W[k][c][fy][fx]*I[b][c][iy][ix]
+#   dimension_relations: [ix=2*ox+1*fx, iy=2*oy+1*fy]
+#   loop_dims: [B, K, C, OY, OX, FY, FX]
+#   loop_sizes: [1, 64, 3, 112, 112, 7, 7]
+#   operand_precision:
+#     W: 8
+#     I: 8
+#     O: 16
+#     O_final: 8
+#   operand_source:
+#     I: 0
+#     W: 0
