@@ -934,6 +934,7 @@ class CostModelEvaluation(CostModelEvaluationABC):
                                 real_cycle,
                                 port_is_shared_by_two_input_operands,
                             )
+                            print(f'inside for loop: {str(layer_op.name + str(mem_lv) + "_" + str(mov_dir))} = {str(data_loading_cc_per_op[layer_op])}\n')
                         else:
                             if mov_dir == DataDirection.RD_OUT_TO_LOW or mov_dir == DataDirection.WR_IN_BY_HIGH:
                                 # don't consider partial sum flowing in the final data off-loading stage
@@ -965,6 +966,7 @@ class CostModelEvaluation(CostModelEvaluationABC):
                             )
                             data_offloading_single[str(port)].append(port_activity)
                             data_offloading_cc_per_op[layer_op.name + str(mem_lv) + "_" + str(mov_dir)] = real_cycle
+                            print(f'inside for loop: {str(layer_op.name + str(mem_lv) + "_" + str(mov_dir))} = {str(real_cycle)}\n')
 
             data_loading_per_mem_inst.append(data_loading_single)
             data_offloading_per_mem_inst.append(data_offloading_single)
@@ -1028,9 +1030,12 @@ class CostModelEvaluation(CostModelEvaluationABC):
         # Combine ports' final data-offloading activities to get the data offloading cycle amount
         # TODO Only considered the worst case for now
         #  (assumed that all the ports are working in series during the final data off-loading phase)
-        data_offloading_cc_pair_combined: list[int | float] = []
-        layer_op = self.layer.output_operand
+        data_offloading_cc_pair_combined: list[int | float] = []                  # debugging
+        layer_op = self.layer.output_operand                                      # debugging
+        print(f'layer_op is {str(layer_op)}\n')                                   # debugging
+        print(f'data_offloading_cc_per_op is {str(data_offloading_cc_per_op)}\n') # debugging
         for mem_lv in range(self.active_mem_level[layer_op] - 1):
+            print(f'mem_lv is {str(layer_op)}\n')                                 # debugging
             elem1 = data_offloading_cc_per_op[layer_op.name + str(mem_lv) + "_" + str(DataDirection.RD_OUT_TO_HIGH)]
             elem2 = data_offloading_cc_per_op[layer_op.name + str(mem_lv + 1) + "_" + str(DataDirection.WR_IN_BY_LOW)]
             longest_offloading_cc = max(elem1, elem2)
