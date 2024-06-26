@@ -1,145 +1,155 @@
 # Modeling Snitch with ZigZag
 
-- Slides documenting meeting with Arne here: https://docs.google.com/presentation/d/10FmwrGjfX_vCTzLIaax1-P3noyZt-mBmsBh1Ad-S9Qo/edit?usp=sharing
+- [ZigZag Integration Status](https://docs.google.com/presentation/d/1-YQwx20RkEFZoqrMr_WQOjtFaXDR8e_lfNbEfbl83HA/edit#slide=id.p)
 
-- Slides documenting subsequent work here: https://docs.google.com/presentation/d/1Kj0Oa_DfxdGLUCwZZA-Q0Mc5MStBUpIYirP0-M6Gj1M/edit?usp=sharing
+- Slides documenting meeting with Arne [here](https://docs.google.com/presentation/d/10FmwrGjfX_vCTzLIaax1-P3noyZt-mBmsBh1Ad-S9Qo/edit#slide=id.p)
 
-![snitch-cc-w-dma.png](snitch-cc-w-dma.png)
+- Slides documenting subsequent work [here](https://docs.google.com/presentation/d/1Kj0Oa_DfxdGLUCwZZA-Q0Mc5MStBUpIYirP0-M6Gj1M/edit?usp=sharing)
+
+## Single Compute Core ERRORS
+
+![image-20240626163440868](cc-error.png)
+
+Run using [main_snitch_cc_only_integers.py]():
+
+```
+python main_snitch_cc_only_integers.py
+```
+
+Error:
+
+```
+2024-06-26 16:39:28,844 - CRITICAL - User-defined accelerator is invalid. Number of given read ports (2) does not equal number of allocated read ports (1) for rf_x1_thru_x31
+Traceback (most recent call last):
+  File "/home/hoppip/zigzag/main_snitch_cc_only_integers.py", line 87, in <module>
+    answers = mainstage.run()
+              ^^^^^^^^^^^^^^^
+  File "/home/hoppip/zigzag/zigzag/stages/MainStage.py", line 17, in run
+    for cme, extra_info in self.list_of_callables[0](self.list_of_callables[1:], **self.kwargs).run():
+  File "/home/hoppip/zigzag/zigzag/stages/WorkloadParserStage.py", line 28, in run
+    for cme, extra_info in sub_stage.run():
+  File "/home/hoppip/zigzag/zigzag/stages/AcceleratorParserStage.py", line 24, in run
+    accelerator = self.parse_accelerator(self.accelerator_yaml_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hoppip/zigzag/zigzag/stages/AcceleratorParserStage.py", line 37, in parse_accelerator
+    raise ValueError("Failed to validate user provided accelerator.")
+ValueError: Failed to validate user provided accelerator.
+```
+
+- [Hardware Description](zigzag/inputs/hardware/snitch-cc-only-integers-broken.yaml)
+- [Workload](zigzag/inputs/workload/matmul-104-x-104.yaml)
+- [default mapping](zigzag/inputs/mapping/snitch-cc-only-integers-mapping.yaml)
 
 ## Single Compute Core
 
-I tried to model snitch compute core like this, omitting the 64 bit connection from L3 to the PE:
+![image-20240626163237985](cc-no-error.png)
 
-![single_cc_for_zigzag.png](./single_cc_for_zigzag.png)
-
-To make it even simpler, I only add one 32 bit register, x1.
-
-- [yaml hardware description](zigzag/inputs/hardware/emily-snitch-riscv32imafd.yaml)
-- [yaml mapping description](zigzag/inputs/mapping/emily-snitch-cc-mapping.yaml)
-- [yaml workload description](emily-workload.yaml)
-- [main file to run zigzag](emily-run_zigzag.py)
-
-I try to run zigzag with:
+Run using [main_snitch_cc_only_integers.py]():
 ```
-python emily-run_zigzag.py 
+python main_snitch_cc_only_integers.py
 ```
 
-But I get the error:
+Output:
 ```
-2024-06-24 11:17:36,767 - run +44 - INFO - Processing  matmul_104_104...
-2024-06-24 11:17:36,767 - run +89 - INFO - matmul_104_104: Launching spatial mapping 1/1 :{D1: {A: 1}}.
-100%|████████████████████████████████████████████████████████████████████████████████████| 720/720 [00:00<00:00, 12176.86it/s]
-Traceback (most recent call last):
-  File "/home/hoppip/zigzag/emily-run_zigzag.py", line 13, in <module>
-    answers = zigzag.api.get_hardware_performance_zigzag(workload, accelerator, mapping, "latency", "emily-zigzag-outputs/","emily-zigzag-outputs/list_of_cmes.pickle")
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/hoppip/zigzag/zigzag/api.py", line 104, in get_hardware_performance_zigzag
-    cmes = mainstage.run()
-           ^^^^^^^^^^^^^^^
-  File "/home/hoppip/zigzag/zigzag/stages/MainStage.py", line 17, in run
-    for cme, extra_info in self.list_of_callables[0](self.list_of_callables[1:], **self.kwargs).run():
-  File "/home/hoppip/zigzag/zigzag/stages/WorkloadParserStage.py", line 28, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/AcceleratorParserStage.py", line 26, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/save_stages.py", line 80, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/save_stages.py", line 128, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/reduce_stages.py", line 130, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/WorkloadStage.py", line 46, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/VisualizationStage.py", line 33, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/save_stages.py", line 33, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/reduce_stages.py", line 70, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/SpatialMappingGeneratorStage.py", line 114, in run
-    for cme, extra_info in spatial_mapping_conversion_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/SpatialMappingConversionStage.py", line 56, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/reduce_stages.py", line 70, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/LomaStage.py", line 40, in run
-    for temporal_mapping in engine.run():
-  File "/home/hoppip/zigzag/zigzag/opt/loma/LomaEngine.py", line 106, in run
-    raise NoValidLoopOrderingFoundException(
-zigzag.opt.loma.LomaEngine.NoValidLoopOrderingFoundException: No valid loop ordering was found for layer matmul_104_104. Please make sure the spatial mapping is compatible with the architecture.
+2024-06-26 16:28:39,280 - INFO - Processing  matmul_104_104...
+2024-06-26 16:28:39,280 - INFO - matmul_104_104: Launching spatial mapping 1/3 :{D1: {C: 1}}.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 720/720 [00:01<00:00, 607.06it/s]
+2024-06-26 16:28:40,470 - INFO - Saved CostModelEvaluation(matmul_104_104, core 1) with energy 1.047e+07 and latency 2.350e+06 to outputs//matmul_104_104_complete.json
+2024-06-26 16:28:40,470 - INFO - matmul_104_104: Launching spatial mapping 2/3 :{D1: {A: 1}}.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 720/720 [00:01<00:00, 603.85it/s]
+2024-06-26 16:28:41,664 - INFO - Saved CostModelEvaluation(matmul_104_104, core 1) with energy 1.047e+07 and latency 2.350e+06 to outputs//matmul_104_104_complete.json
+2024-06-26 16:28:41,664 - INFO - matmul_104_104: Launching spatial mapping 3/3 :{D1: {B: 1}}.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 720/720 [00:01<00:00, 604.87it/s]
+2024-06-26 16:28:42,856 - INFO - Saved CostModelEvaluation(matmul_104_104, core 1) with energy 1.047e+07 and latency 2.350e+06 to outputs//matmul_104_104_complete.json
+Loop ordering for matmul_104_104
+===========================================================================================
+Temporal Loops                    O                  I                  W                  
+===========================================================================================
+for B in [0, 8):                  l3                 l1                 l3                 
+-------------------------------------------------------------------------------------------
+  for B in [0, 13):               l3                 l1                 l1                 
+-------------------------------------------------------------------------------------------
+    for A in [0, 8):              l1                 l1                 l1                 
+-------------------------------------------------------------------------------------------
+      for C in [0, 13):           rf_x1_thru_x31     l1                 l1                 
+-------------------------------------------------------------------------------------------
+        for C in [0, 8):          rf_x1_thru_x31     l1                 rf_x1_thru_x31     
+-------------------------------------------------------------------------------------------
+          for A in [0, 13):       rf_x1_thru_x31     rf_x1_thru_x31     rf_x1_thru_x31     
+-------------------------------------------------------------------------------------------
+===========================================================================================
+Spatial Loops                                                                              
+===========================================================================================
+            parfor C in [0, 1):                                                            
+-------------------------------------------------------------------------------------------
+
+Stall and slack per port of each memory instance:
+  rf_x1_thru_x31: {'r_port_1': 1222192, 'w_port_1': 0}
+  l1: {'rw_port_1': 0}
+  l3: {'rw_port_1': 0}
+Latency: 2.350e+06
 ```
 
-**What am I doing wrong?**
+- [Hardware Description](zigzag/inputs/hardware/snitch-cc-only-integers.yaml)
+- [Workload](zigzag/inputs/workload/matmul-104-x-104.yaml)
+- [default mapping](zigzag/inputs/mapping/snitch-cc-only-integers-mapping.yaml)
 
 ## Snitch Cluster
 
-- [yaml hardware description](zigzag/inputs/hardware/emily-snitch-riscv32imafd-cluster.yaml)
-- [yaml mapping description](zigzag/inputs/mapping/emily-snitch-cluster-mapping.yaml)
-- [yaml workload description](emily-workload.yaml)
-- [main file to run zigzag](emily-run_zigzag.py)
+![image-20240626163738939](cluster.png)
 
-I try to run zigzag with:
+Run using [main_snitch_cluster_only_integers.py]():
 
 ```
-python emily-run_zigzag.py 
+python main_snitch_cluster_only_integers.py
 ```
 
-But I get the error:
+Output:
 
 ```
-2024-06-24 11:56:52,407 - run +44 - INFO - Processing  matmul_104_104...
-2024-06-24 11:56:52,407 - limit_unrolling_to_mem_bandwidth +189 - WARNING - Maximal spatial unrolling of A at D2 limited to 1 due to bandwidth of reg_x1
-2024-06-24 11:56:52,407 - limit_unrolling_to_mem_bandwidth +189 - WARNING - Maximal spatial unrolling of B at D2 limited to 1 due to bandwidth of reg_x1
-2024-06-24 11:56:52,407 - limit_unrolling_to_mem_bandwidth +189 - WARNING - Maximal spatial unrolling of C at D2 limited to 4 due to bandwidth of reg_x1
-2024-06-24 11:56:52,407 - check_and_reduce +174 - WARNING - User provided spatial unrolling (A:8) in Dimension D1 exceeded maximally allowed unrolling of 1. Reducing unrolling to this value.
-2024-06-24 11:56:52,407 - run +89 - INFO - matmul_104_104: Launching spatial mapping 1/3 :{D1: {A: 1}, D2: {C: 4}}.
-100%|████████████████████████████████████████████████████████████████████████████████████| 720/720 [00:00<00:00, 11965.45it/s]
-Traceback (most recent call last):
-  File "/home/hoppip/zigzag/emily-run_zigzag.py", line 15, in <module>
-    answers = zigzag.api.get_hardware_performance_zigzag(workload, accelerator, mapping, "latency", "emily-zigzag-outputs/","emily-zigzag-outputs/list_of_cmes.pickle")
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/hoppip/zigzag/zigzag/api.py", line 104, in get_hardware_performance_zigzag
-    cmes = mainstage.run()
-           ^^^^^^^^^^^^^^^
-  File "/home/hoppip/zigzag/zigzag/stages/MainStage.py", line 17, in run
-    for cme, extra_info in self.list_of_callables[0](self.list_of_callables[1:], **self.kwargs).run():
-  File "/home/hoppip/zigzag/zigzag/stages/WorkloadParserStage.py", line 28, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/AcceleratorParserStage.py", line 26, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/save_stages.py", line 80, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/save_stages.py", line 128, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/reduce_stages.py", line 130, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/WorkloadStage.py", line 46, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/VisualizationStage.py", line 33, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/save_stages.py", line 33, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/reduce_stages.py", line 70, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/SpatialMappingGeneratorStage.py", line 114, in run
-    for cme, extra_info in spatial_mapping_conversion_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/SpatialMappingConversionStage.py", line 56, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/reduce_stages.py", line 70, in run
-    for cme, extra_info in substage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/LomaStage.py", line 40, in run
-    for temporal_mapping in engine.run():
-  File "/home/hoppip/zigzag/zigzag/opt/loma/LomaEngine.py", line 106, in run
-    raise NoValidLoopOrderingFoundException(
-zigzag.opt.loma.LomaEngine.NoValidLoopOrderingFoundException: No valid loop ordering was found for layer matmul_104_104. Please make sure the spatial mapping is compatible with the architecture.
+2024-06-26 16:43:23,251 - INFO - Processing  matmul_104_104...
+2024-06-26 16:43:23,252 - INFO - matmul_104_104: Launching spatial mapping 1/3 :{D1: {C: 1}, D2: {C: 8}}.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 720/720 [00:01<00:00, 616.62it/s]
+2024-06-26 16:43:24,423 - INFO - Saved CostModelEvaluation(matmul_104_104, core 1) with energy 4.730e+07 and latency 2.990e+05 to outputs//matmul_104_104_complete.json
+2024-06-26 16:43:24,423 - INFO - matmul_104_104: Launching spatial mapping 2/3 :{D1: {C: 1}, D2: {A: 8}}.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 720/720 [00:01<00:00, 593.06it/s]
+2024-06-26 16:43:25,639 - INFO - Saved CostModelEvaluation(matmul_104_104, core 1) with energy 1.228e+07 and latency 2.965e+05 to outputs//matmul_104_104_complete.json
+2024-06-26 16:43:25,639 - INFO - matmul_104_104: Launching spatial mapping 3/3 :{D1: {C: 1}, D2: {B: 8}}.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 720/720 [00:01<00:00, 592.48it/s]
+2024-06-26 16:43:26,856 - INFO - Saved CostModelEvaluation(matmul_104_104, core 1) with energy 1.228e+07 and latency 2.965e+05 to outputs//matmul_104_104_complete.json
+Loop ordering for matmul_104_104
+=============================================================================================
+Temporal Loops                      O                  I                  W                  
+=============================================================================================
+for A in [0, 13):                   l3                 l1                 l1                 
+---------------------------------------------------------------------------------------------
+  for A in [0, 8):                  l1                 l1                 l1                 
+---------------------------------------------------------------------------------------------
+    for B in [0, 4):                l1                 rf_x1_thru_x31     l1                 
+---------------------------------------------------------------------------------------------
+      for C in [0, 13):             rf_x1_thru_x31     rf_x1_thru_x31     l1                 
+---------------------------------------------------------------------------------------------
+        for B in [0, 13):           rf_x1_thru_x31     rf_x1_thru_x31     l1                 
+---------------------------------------------------------------------------------------------
+          for B in [0, 2):          rf_x1_thru_x31     rf_x1_thru_x31     rf_x1_thru_x31     
+---------------------------------------------------------------------------------------------
+=============================================================================================
+Spatial Loops                                                                                
+=============================================================================================
+            parfor C in [0, 8):                                                              
+---------------------------------------------------------------------------------------------
+            parfor C in [0, 1):                                                              
+---------------------------------------------------------------------------------------------
+
+Stall and slack per port of each memory instance:
+  rf_x1_thru_x31: {'r_port_1': 156803, 'w_port_1': 0}
+  l1: {'rw_port_1': 0}
+  l3: {'rw_port_1': 0}
+Latency: 2.990e+05
+
 ```
 
-**What am I doing wrong?**
+- [Hardware Description](zigzag/inputs/hardware/snitch-cluster-only-integers.yaml)
+- [Workload](zigzag/inputs/workload/matmul-104-x-104.yaml)
+- [Default Mapping File](zigzag/inputs/mapping/emily-snitch-cluster-mapping.yaml)
 
-## How to define memory hierarchy in yaml file?
-
-- From [tpu_like.yaml](zigzag/inputs/hardware/tpu_like.yaml), how does zigzag know that the memory hierarchy looks like the following?
-
-  ![tpu_like.png](tpu_like.png)
-
-- **why isn't `rf_128B` connectd to `sram_2MB` like `rf_2B` is?**
