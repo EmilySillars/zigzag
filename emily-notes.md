@@ -6,11 +6,11 @@
 
 - Slides documenting subsequent work [here](https://docs.google.com/presentation/d/1Kj0Oa_DfxdGLUCwZZA-Q0Mc5MStBUpIYirP0-M6Gj1M/edit?usp=sharing)
 
-## Single Compute Core ERRORS
+## Single Snitch Compute Core ERRORS
 
 ![image-20240626163440868](cc-error.png)
 
-Run using [main_snitch_cc_only_integers.py]():
+Run using [main_snitch_cc_only_integers.py](main_snitch_cc_only_integers.py):
 
 ```
 python main_snitch_cc_only_integers.py
@@ -40,11 +40,11 @@ ValueError: Failed to validate user provided accelerator.
 - [Workload](zigzag/inputs/workload/matmul-104-x-104.yaml)
 - [default mapping](zigzag/inputs/mapping/snitch-cc-only-integers-mapping.yaml)
 
-## Single Compute Core
+## Single Snitch Compute Core
 
 ![image-20240626163237985](cc-no-error.png)
 
-Run using [main_snitch_cc_only_integers.py]():
+Run using [main_snitch_cc_only_integers.py](main_snitch_cc_only_integers.py):
 ```
 python main_snitch_cc_only_integers.py
 ```
@@ -98,7 +98,7 @@ Latency: 2.350e+06
 
 ![image-20240626163738939](cluster.png)
 
-Run using [main_snitch_cluster_only_integers.py]():
+Run using [main_snitch_cluster_only_integers.py](main_snitch_cluster_only_integers.py):
 
 ```
 python main_snitch_cluster_only_integers.py
