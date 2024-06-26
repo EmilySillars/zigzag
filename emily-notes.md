@@ -6,40 +6,6 @@
 
 - Slides documenting subsequent work [here](https://docs.google.com/presentation/d/1Kj0Oa_DfxdGLUCwZZA-Q0Mc5MStBUpIYirP0-M6Gj1M/edit?usp=sharing)
 
-## Single Snitch Compute Core ERRORS
-
-![image-20240626163440868](cc-error.png)
-
-Run using [main_snitch_cc_only_integers.py](main_snitch_cc_only_integers.py):
-
-```
-python main_snitch_cc_only_integers.py
-```
-
-Error:
-
-```
-2024-06-26 16:39:28,844 - CRITICAL - User-defined accelerator is invalid. Number of given read ports (2) does not equal number of allocated read ports (1) for rf_x1_thru_x31
-Traceback (most recent call last):
-  File "/home/hoppip/zigzag/main_snitch_cc_only_integers.py", line 87, in <module>
-    answers = mainstage.run()
-              ^^^^^^^^^^^^^^^
-  File "/home/hoppip/zigzag/zigzag/stages/MainStage.py", line 17, in run
-    for cme, extra_info in self.list_of_callables[0](self.list_of_callables[1:], **self.kwargs).run():
-  File "/home/hoppip/zigzag/zigzag/stages/WorkloadParserStage.py", line 28, in run
-    for cme, extra_info in sub_stage.run():
-  File "/home/hoppip/zigzag/zigzag/stages/AcceleratorParserStage.py", line 24, in run
-    accelerator = self.parse_accelerator(self.accelerator_yaml_path)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/hoppip/zigzag/zigzag/stages/AcceleratorParserStage.py", line 37, in parse_accelerator
-    raise ValueError("Failed to validate user provided accelerator.")
-ValueError: Failed to validate user provided accelerator.
-```
-
-- [Hardware Description](zigzag/inputs/hardware/snitch-cc-only-integers-broken.yaml)
-- [Workload](zigzag/inputs/workload/matmul-104-x-104.yaml)
-- [default mapping](zigzag/inputs/mapping/snitch-cc-only-integers-mapping.yaml)
-
 ## Single Snitch Compute Core
 
 ![image-20240626163237985](cc-no-error.png)
@@ -153,3 +119,36 @@ Latency: 2.990e+05
 - [Workload](zigzag/inputs/workload/matmul-104-x-104.yaml)
 - [Default Mapping File](zigzag/inputs/mapping/emily-snitch-cluster-mapping.yaml)
 
+## Single Snitch Compute Core ERRORS
+
+![image-20240626163440868](cc-error.png)
+
+Run using [main_snitch_cc_only_integers.py](main_snitch_cc_only_integers.py):
+
+```
+python main_snitch_cc_only_integers.py
+```
+
+Error:
+
+```
+2024-06-26 16:39:28,844 - CRITICAL - User-defined accelerator is invalid. Number of given read ports (2) does not equal number of allocated read ports (1) for rf_x1_thru_x31
+Traceback (most recent call last):
+  File "/home/hoppip/zigzag/main_snitch_cc_only_integers.py", line 87, in <module>
+    answers = mainstage.run()
+              ^^^^^^^^^^^^^^^
+  File "/home/hoppip/zigzag/zigzag/stages/MainStage.py", line 17, in run
+    for cme, extra_info in self.list_of_callables[0](self.list_of_callables[1:], **self.kwargs).run():
+  File "/home/hoppip/zigzag/zigzag/stages/WorkloadParserStage.py", line 28, in run
+    for cme, extra_info in sub_stage.run():
+  File "/home/hoppip/zigzag/zigzag/stages/AcceleratorParserStage.py", line 24, in run
+    accelerator = self.parse_accelerator(self.accelerator_yaml_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hoppip/zigzag/zigzag/stages/AcceleratorParserStage.py", line 37, in parse_accelerator
+    raise ValueError("Failed to validate user provided accelerator.")
+ValueError: Failed to validate user provided accelerator.
+```
+
+- [Hardware Description](zigzag/inputs/hardware/snitch-cc-only-integers-broken.yaml)
+- [Workload](zigzag/inputs/workload/matmul-104-x-104.yaml)
+- [default mapping](zigzag/inputs/mapping/snitch-cc-only-integers-mapping.yaml)
