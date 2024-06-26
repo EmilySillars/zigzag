@@ -1030,12 +1030,12 @@ class CostModelEvaluation(CostModelEvaluationABC):
         # Combine ports' final data-offloading activities to get the data offloading cycle amount
         # TODO Only considered the worst case for now
         #  (assumed that all the ports are working in series during the final data off-loading phase)
-        data_offloading_cc_pair_combined: list[int | float] = []                  # debugging
-        layer_op = self.layer.output_operand                                      # debugging
-        print(f'layer_op is {str(layer_op)}\n')                                   # debugging
-        print(f'data_offloading_cc_per_op is {str(data_offloading_cc_per_op)}\n') # debugging
+        # data_offloading_cc_pair_combined: list[int | float] = []                  # debugging
+        # layer_op = self.layer.output_operand                                      # debugging
+        # print(f'layer_op is {str(layer_op)}\n')                                   # debugging
+        # print(f'data_offloading_cc_per_op is {str(data_offloading_cc_per_op)}\n') # debugging
         for mem_lv in range(self.active_mem_level[layer_op] - 1):
-            print(f'mem_lv is {str(layer_op)}\n')                                 # debugging
+         #   print(f'mem_lv is {str(layer_op)}\n')                                 # debugging
             elem1 = data_offloading_cc_per_op[layer_op.name + str(mem_lv) + "_" + str(DataDirection.RD_OUT_TO_HIGH)]
             elem2 = data_offloading_cc_per_op[layer_op.name + str(mem_lv + 1) + "_" + str(DataDirection.WR_IN_BY_LOW)]
             longest_offloading_cc = max(elem1, elem2)

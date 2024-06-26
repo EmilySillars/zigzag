@@ -2,21 +2,22 @@ import zigzag.api
 from zigzag.visualization.results.print_mapping import print_mapping
 from zigzag.visualization.graph.memory_hierarchy import visualize_memory_hierarchy_graph # debugging only
 
-mapping= "zigzag/inputs/mapping/tpu_like2.yaml"         # debugging
+
+#workload = "zigzag/inputs/workload/matmul-104-x-104.yaml"
+workload = "zigzag/inputs/workload/resnet18.yaml"      # debugging
+mapping = "zigzag/inputs/mapping/tpu_like.yaml"         # debugging
 accelerator = "zigzag/inputs/hardware/tpu_like.yaml"   # debugging
-#workload = "zigzag/inputs/workload/resnet18.yaml"      # debugging
 
-# mapping= "zigzag/inputs/mapping/emily-gemm.yaml" # gives ex 10 output
-# accelerator = "zigzag/inputs/hardware/gemm.yaml" # gives ex 10 output
+# THREE OPTIONS
+# OPTION 1: SINGLE INTEGER COMPUTE CORE
+accelerator = "zigzag/inputs/hardware/snitch-cc-only-integers.yaml"  
+mapping = "zigzag/inputs/mapping/snitch-cc-only-integers-mapping.yaml"   
 
-# mapping= "zigzag/inputs/mapping/emily-snitch-cc-mapping.yaml"         # breaks due to spatial mapping error
-# accelerator = "zigzag/inputs/hardware/emily-snitch-riscv32imafd-v2.yaml" # breaks due to spatial mapping error
-# mapping= "zigzag/inputs/mapping/emily-snitch-cluster-mapping.yaml"            # breaks; no valid loop ordering
-# accelerator = "zigzag/inputs/hardware/emily-snitch-riscv32imafd-cluster-v2.yaml" # breaks; no valid loop ordering
-# accelerator = "zigzag/inputs/hardware/emily-snitch-riscv32imafd-cluster.yaml" # breaks; no valid loop ordering
+# OPTION 2: SINGLE FLOAT COMPUTE CORE
+# todo
 
-# takes in workload generated from a run of xdsl_opt_main.py
-workload = "emily-workload.yaml"
+# OPTION 3: CLUSTER OF 8 FLOAT COMPUTE CORES
+# todo
 
 
 answers = zigzag.api.get_hardware_performance_zigzag(workload, accelerator, mapping, "latency", "emily-zigzag-outputs/","emily-zigzag-outputs/list_of_cmes.pickle")

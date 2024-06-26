@@ -1,0 +1,63 @@
+# - name: default
+#   core_allocation: [1]
+#   spatial_mapping:
+#     D1:
+#       - B, 8
+#     D2:
+#       - C, 8
+#     D3:
+#       - K, 8
+#   temporal_ordering:
+#     - [C, 8]
+#     - [K, 8]
+#     - [B, 8]
+#     - [C, 8]
+#     - [K, 8]
+#     - [B, 8]
+#   memory_operand_links:
+#     O: O
+#     W: I2
+#     I: I1
+- name: default
+  core_allocation: [1]
+  spatial_mapping:
+    D1:
+      - B, 1
+  memory_operand_links:
+    O: O
+    W: I2
+    I: I1
+- name: matmul_104_104
+  core_allocation: [1]
+  spatial_mapping:
+    D1:
+    - A, 1
+  memory_operand_links:
+    O: O
+    W: I2
+    I: I1
+
+
+
+
+# mapping = {
+#     "default": {  # default
+#         "spatial_mapping": {"PE_ARRAY_D1": ("D0", 8), "PE_ARRAY_D2": ("D1", 8), "PE_ARRAY_D3": ("D2", 8)},
+#         "temporal_ordering": [
+#             # Innermost loop
+#             # ("K", 8),
+#             # ("N", 8),
+#             # ("M", 8),
+#             # ("K", 8),
+#             # ("N", 8),
+#             # ("M", 8),
+#             # Outermost loop
+#         ],
+#         "core_allocation": 1,
+#         "memory_operand_links": {
+#             "O": "O",
+#             "W": "I2",
+#             "I": "I1",
+#         },
+#     },
+# }
