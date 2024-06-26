@@ -88,5 +88,5 @@ operational_array:
   input_precision: [8, 8]
   multiplier_energy: 0.04 # pJ # copied from gemm.yaml
   multiplier_area: 1 # unit
-  dimensions: [D1]
-  sizes: [1] 
+  dimensions: [D1,D2]
+  sizes: [1,8] 

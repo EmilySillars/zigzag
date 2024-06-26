@@ -1,26 +1,15 @@
 name: snitch-riscv32imafd
 
-
-# Notes from https://kuleuven-micas.github.io/zigzag/hardware.html:
-  # fh: from high, meaning the data is provided by the higher level of memory to be written to the current level of memory
-
-  # th: to high, meaning the data is read out from the current level of memory to go to the higher level of memory
-
-  # fl: from low, meaning the data is provided by the lower level of memory to be written to the current level of memory
-
-  # tl: to low, meaning the data is read out from the current level of memory to go to the lower level of memory
-
-
 memories:
   # Representing registers x1 - x31 as a single register file of 992 bits.
   rf_x1_thru_x31:
     size: 992
-    r_bw: 32
+    r_bw: 64
     w_bw: 32
     r_cost: 0.02  # TODO
     w_cost: 0.02  # TODO
     area: 0
-    r_port: 1
+    r_port: 2
     w_port: 1
     rw_port: 0
     latency: 1
@@ -29,11 +18,15 @@ memories:
     ports:
       - fh: w_port_1 # input data FROM L1 can be written to registers
         tl: r_port_1 # input data can be read from registers to give to TO registers
+        tl: r_port_2 # input data can be read from registers to give to TO registers
       - fh: w_port_1 # weight data FROM L1 can be written to registers
         tl: r_port_1 # weight data can be read from registers to give to TO registers
+        tl: r_port_2 # weight data can be read from registers to give to TO registers
       - fh: w_port_1 # output data FROM registers can be written to registers
         tl: r_port_1 # output data can be read from registers to give to TO registers
+        tl: r_port_2 # output data can be read from registers to give to TO registers
         th: r_port_1 # output data can be read from registers to give TO L1
+        th: r_port_2 # output data can be read from registers to give TO L1
     served_dimensions: [] # every core gets a register file, so not serving any dimensions
 
 # TCDM

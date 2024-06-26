@@ -3,10 +3,10 @@ from zigzag.visualization.results.print_mapping import print_mapping
 from zigzag.visualization.graph.memory_hierarchy import visualize_memory_hierarchy_graph # debugging only
 
 
-#workload = "zigzag/inputs/workload/matmul-104-x-104.yaml"
-workload = "zigzag/inputs/workload/resnet18.yaml"      # debugging
-mapping = "zigzag/inputs/mapping/tpu_like.yaml"         # debugging
-accelerator = "zigzag/inputs/hardware/tpu_like.yaml"   # debugging
+workload = "zigzag/inputs/workload/matmul-104-x-104.yaml"
+# workload = "zigzag/inputs/workload/resnet18.yaml"      # debugging
+# mapping = "zigzag/inputs/mapping/tpu_like.yaml"         # debugging
+# accelerator = "zigzag/inputs/hardware/tpu_like.yaml"   # debugging
 
 # THREE OPTIONS
 # OPTION 1: SINGLE INTEGER COMPUTE CORE
