@@ -1,0 +1,14 @@
+937d936
+<                         #    print(f'inside for loop: {str(layer_op.name + str(mem_lv) + "_" + str(mov_dir))} = {str(data_loading_cc_per_op[layer_op])}\n')
+969d967
+<                           #  print(f'inside for loop: {str(layer_op.name + str(mem_lv) + "_" + str(mov_dir))} = {str(real_cycle)}\n')
+1033,1036c1031,1032
+<         # data_offloading_cc_pair_combined: list[int | float] = []                  # debugging
+<         # layer_op = self.layer.output_operand                                      # debugging
+<         # print(f'layer_op is {str(layer_op)}\n')                                   # debugging
+<         # print(f'data_offloading_cc_per_op is {str(data_offloading_cc_per_op)}\n') # debugging
+---
+>         data_offloading_cc_pair_combined: list[int | float] = []
+>         layer_op = self.layer.output_operand
+1038d1033
+<          #   print(f'mem_lv is {str(layer_op)}\n')                                 # debugging

@@ -1,0 +1,45 @@
+- id: 0 # conv1 stride 2
+  name: example_name_of_layer0
+  operator_type: Conv
+  equation: O[b][k][oy][ox]+=W[k][c][fy][fx]*I[b][c][iy][ix]
+  dimension_relations: [ix=2*ox+1*fx, iy=2*oy+1*fy]
+  loop_dims: [B, K, C, OY, OX, FY, FX]
+  loop_sizes: [1, 64, 3, 112, 112, 7, 7]
+  operand_precision:
+    W: 8
+    I: 8
+    O: 16
+    O_final: 8
+  operand_source:
+    I: 0
+    W: 0
+
+- id: 1 # max pool, stride 2
+  operator_type: Pooling
+  equation: O[b][g][oy][ox]+=W[fx][fy]*I[b][g][iy][ix]
+  dimension_relations: [ix=2*ox+1*fx, iy=2*oy+1*fy]
+  loop_dims: [B, G, OY, OX, FX, FY]
+  loop_sizes: [1, 64, 56, 56, 3, 3]
+  operand_precision:
+    I: 8
+    W: 0
+    O: 16
+    O_final: 8
+  operand_source:
+    I: 0
+    W: 1 # Constant operand
+
+- id: 2 # conv2_1
+  operator_type: Conv
+  equation: O[b][k][oy][ox]+=W[k][c][fy][fx]*I[b][c][iy][ix]
+  dimension_relations: [ix=1*ox+1*fx, iy=1*oy+1*fy]
+  loop_dims: [B, K, C, OY, OX, FY, FX]
+  loop_sizes: [1, 64, 64, 56, 56, 3, 3]
+  operand_precision:
+    W: 8
+    I: 8
+    O: 16
+    O_final: 8
+  operand_source:
+    I: 1
+    W: 2

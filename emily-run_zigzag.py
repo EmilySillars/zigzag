@@ -6,10 +6,11 @@ from zigzag.visualization.graph.memory_hierarchy import visualize_memory_hierarc
 workload = "zigzag/inputs/workload/matmul-104-x-104.yaml"
 # workload = "zigzag/inputs/workload/resnet18.yaml"      # debugging
 # mapping = "zigzag/inputs/mapping/tpu_like.yaml"         # debugging
-# accelerator = "zigzag/inputs/hardware/tpu_like.yaml"   # debugging
+# accelerator = "zigzag/inputs/hardwarse/tpu_like.yaml"   # debugging
 
 # THREE OPTIONS
 # OPTION 1: SINGLE INTEGER COMPUTE CORE
+workload = "zigzag/inputs/workload/matmul-104-x-104.yaml"
 accelerator = "zigzag/inputs/hardware/snitch-cc-only-integers.yaml"  
 mapping = "zigzag/inputs/mapping/snitch-cc-only-integers-mapping.yaml"   
 

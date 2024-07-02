@@ -1,0 +1,20 @@
+- name: default
+  core_allocation: [1]
+  spatial_mapping:
+    D1:
+      - B, 1
+    D2:
+      - OY, 8
+  temporal_ordering:
+    - [B, 112]
+    - [K, 112]
+    - [C, 112]
+    - [OY, 14]
+    - [OX, 112]
+    - [FY, 112]
+    - [FX, 112]
+  memory_operand_links:
+    O: O
+    W: I2
+    I: I1
+# unroll OY
