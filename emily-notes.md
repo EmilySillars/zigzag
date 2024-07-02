@@ -3,12 +3,21 @@
 - [ZigZag Integration Status](https://docs.google.com/presentation/d/1-YQwx20RkEFZoqrMr_WQOjtFaXDR8e_lfNbEfbl83HA/edit#slide=id.p)
 - Slides documenting meeting with Arne [here](https://docs.google.com/presentation/d/10FmwrGjfX_vCTzLIaax1-P3noyZt-mBmsBh1Ad-S9Qo/edit#slide=id.p)
 - Slides documenting subsequent work [here](https://docs.google.com/presentation/d/1Kj0Oa_DfxdGLUCwZZA-Q0Mc5MStBUpIYirP0-M6Gj1M/edit?usp=sharing)
+- Slides documenting 2nd meeting with Arne [here](https://docs.google.com/presentation/d/1ow0q8QFyVJV0ZxhkWge3YxJtolizrXYspLbFo4W4zH0/edit?usp=sharing)
 
 ### Questions
 
-- Why doesn't ZigZag find lowest latency regardless of default mapping?
+**ZigZag**
 
-- what does  `core_allocation: [1]` in ZigZag mean? (lookup!)
+- Why doesn't ZigZag find lowest latency regardless of default mapping?
+- Is it normal to have a spatial mapping with unroll dimension of 1 in my output?
+- what does  `core_allocation: [1]` in ZigZag mean? Isn't their only ever one accelerator/core that ZigZag knows about?
+- Is there a way to model the snitch compute core's second connection to L3?
+- What if I have both integer and floating point operations? How do I model both register files?
+  **Stream**
+- Stream should give mapping output in a computational node basis, right? Will it look like the temporal and spatial mappings produced by ZigZag?
+- What about layer fusion? How does stream use ZigZag for tiling when it also fuses layers? Doesn't ZigZag require perfectly nested loops?
+- What about edge cases of tiles? If the the matrix size is not divisible by the tile size, will ZigZag always assume padding and round up?
 
 ## multilayer on Snitch Cluster (suggest unrolling K) Latency: 3.137e+07
 
