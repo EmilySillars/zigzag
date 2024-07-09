@@ -1,0 +1,14 @@
+- id: 0
+  operator_type: Add
+  equation: O[r][c]=I[r][c]+W[r][c]
+  dimension_relations: []
+  loop_dims: [R,C]
+  loop_sizes: [1, 400]
+  operand_precision:
+    W: 64
+    I: 64
+    O: 64
+    O_final: 64
+  operand_source:
+    I: 0
+    W: 0
