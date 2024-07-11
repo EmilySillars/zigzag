@@ -10,6 +10,7 @@
 **ZigZag**
 
 - Why doesn't ZigZag find lowest latency regardless of default mapping?
+ANSWER: my default mapping was not empty! If you provide a non-empty mapping, ZigZag will use what you provide instead of using its cost model!!!
 - Is it normal to have a spatial mapping with unroll dimension of 1 in my output?
 - what does  `core_allocation: [1]` in ZigZag mean? Isn't their only ever one accelerator/core that ZigZag knows about?
 - Is there a way to model the snitch compute core's second connection to L3?
