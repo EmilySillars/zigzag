@@ -83,8 +83,23 @@ answers = mainstage.run()
 cme = answers[0][0]
 save_path = "outputs/breakdown.png"
 bar_plot_cost_model_evaluations_breakdown([cme], save_path=save_path, xtick_rotation=0)
-from zigzag.visualization.results.print_mapping import print_mapping
+from zigzag.visualization.results.print_mapping import get_temporal_spatial_loops, print_mapping
+
 print_mapping(cme)
+
+temporal_loops, spatial_loops, memories = get_temporal_spatial_loops(cme)
+
+print("PRINTING OUT THE SPATIAL MAPPING  FROM get_temporal_spatial_loops V V V")
+print(str(spatial_loops))
+print("PRINTING OUT THE SPATIAL MAPPING  FROM get_temporal_spatial_loops ^ ^ ^\n")
+print("PRINTING OUT THE SPATIAL MAPPING  directly from cme object V V V")
+print(str(spatial_loops))
+print(cme.spatial_mapping)
+print("PRINTING OUT THE SPATIAL MAPPING  directly from cme object ^ ^ ^\n")
+print("PRINTING OUT THE TEMPORAL MAPPING  V V V")
+print(str(temporal_loops))
+print("PRINTING OUT THE TEMPORAL MAPPING  ^ ^ ^\n")
+
 mem_names = [ml.memory_instance.name for ml in cme.mem_level_list]
 stall_slacks = cme.SS_comb_collect
 print("Stall and slack per port of each memory instance:")
