@@ -89,16 +89,20 @@ print_mapping(cme)
 
 temporal_loops, spatial_loops, memories = get_temporal_spatial_loops(cme)
 
-print("PRINTING OUT THE SPATIAL MAPPING  FROM get_temporal_spatial_loops V V V")
-print(str(spatial_loops))
-print("PRINTING OUT THE SPATIAL MAPPING  FROM get_temporal_spatial_loops ^ ^ ^\n")
+# print("PRINTING OUT THE SPATIAL MAPPING  FROM get_temporal_spatial_loops V V V")
+# print(str(spatial_loops))
+# print("PRINTING OUT THE SPATIAL MAPPING  FROM get_temporal_spatial_loops ^ ^ ^\n")
+# print("PRINTING OUT THE TEMPORAL MAPPING  FROM get_temporal_spatial_loops V V V")
+# print(str(temporal_loops))
+# print("PRINTING OUT THE TEMPORAL MAPPING  FROM get_temporal_spatial_loops ^ ^ ^\n")
+
 print("PRINTING OUT THE SPATIAL MAPPING  directly from cme object V V V")
-print(str(spatial_loops))
 print(cme.spatial_mapping)
 print("PRINTING OUT THE SPATIAL MAPPING  directly from cme object ^ ^ ^\n")
-print("PRINTING OUT THE TEMPORAL MAPPING  V V V")
-print(str(temporal_loops))
-print("PRINTING OUT THE TEMPORAL MAPPING  ^ ^ ^\n")
+print("PRINTING OUT THE TEMPORAL MAPPING  directly from cme object V V V")
+print(cme.temporal_mapping)
+print("PRINTING OUT THE TEMPORAL MAPPING  directly from cme object ^ ^ ^\n")
+
 
 mem_names = [ml.memory_instance.name for ml in cme.mem_level_list]
 stall_slacks = cme.SS_comb_collect
