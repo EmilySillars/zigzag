@@ -62,7 +62,6 @@ mainstage = MainStage(
     [  # Initializes the MainStage as entry point
         WorkloadParserStage,  # Parses the manual definition into the workload
         AcceleratorParserStage,  # Parses the accelerator
-        CompleteSaveStage,  # Saves all received CMEs information to a json
         WorkloadStage,  # Iterates through the different layers in the workload
         SpatialMappingGeneratorStage,  # Generates multiple spatial mappings (SM)
         MinimalLatencyStage,  # Reduces all CMEs, returning minimal latency one
@@ -88,13 +87,6 @@ from zigzag.visualization.results.print_mapping import get_temporal_spatial_loop
 print_mapping(cme)
 
 temporal_loops, spatial_loops, memories = get_temporal_spatial_loops(cme)
-
-# print("PRINTING OUT THE SPATIAL MAPPING  FROM get_temporal_spatial_loops V V V")
-# print(str(spatial_loops))
-# print("PRINTING OUT THE SPATIAL MAPPING  FROM get_temporal_spatial_loops ^ ^ ^\n")
-# print("PRINTING OUT THE TEMPORAL MAPPING  FROM get_temporal_spatial_loops V V V")
-# print(str(temporal_loops))
-# print("PRINTING OUT THE TEMPORAL MAPPING  FROM get_temporal_spatial_loops ^ ^ ^\n")
 
 print("PRINTING OUT THE SPATIAL MAPPING  directly from cme object V V V")
 print(cme.spatial_mapping)
