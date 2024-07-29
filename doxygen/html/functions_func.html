@@ -29,7 +29,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">ZigZag - Deep Learning Hardware Design Space Exploration
    </div>
-   <div id="projectbrief">This repository presents the novel version of our tried-and-tested HW Architecture-Mapping Design Space Exploration (DSE) Framework for Deep Learning (DL) accelerators. ZigZag bridges the gap between algorithmic DL decisions and their acceleration cost on specialized accelerators through a fast and accurate HW cost estimation.</div>
+   <div id="projectbrief">This repository presents the novel version of our tried-and-tested hardware Architecture-Mapping Design Space Exploration (DSE) Framework for Deep Learning (DL) accelerators. ZigZag bridges the gap between algorithmic DL decisions and their acceleration cost on specialized accelerators through a fast and accurate hardware cost estimation.</div>
   </td>
  </tr>
  </tbody>
@@ -89,7 +89,8 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 <h3><a id="index__5F"></a>- _ -</h3><ul>
 <li>__add__()
 : <a class="el" href="classzigzag_1_1cost__model_1_1cost__model_1_1CostModelEvaluationABC.html#a72b2b957ecb6cf38b951d381dce61f60">CostModelEvaluationABC</a>
-, <a class="el" href="classzigzag_1_1mapping_1_1data__movement_1_1FourWayDataMoving.html#a5302d51c562e345f87d05aee1885c39c">FourWayDataMoving</a>
+, <a class="el" href="classzigzag_1_1mapping_1_1data__movement_1_1AccessEnergy.html#aa31cea2d5cece4bb97cbad20c998c4ad">AccessEnergy</a>
+, <a class="el" href="classzigzag_1_1mapping_1_1data__movement_1_1MemoryAccesses.html#ae7b831a29f0a4677e160cff089c5728c">MemoryAccesses</a>
 , <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1LayerDimSizes.html#a3cf49332e77fc1ef7fe0fb33f147f84d">LayerDimSizes</a>
 </li>
 <li>__call__()
@@ -103,7 +104,6 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 <li>__delitem__()
 : <a class="el" href="classzigzag_1_1mapping_1_1spatial__mapping_1_1MappingSingleOADim.html#aff745a3ceadfd32a5a59156b7dc916e4">MappingSingleOADim</a>
 , <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1LayerDimSizes.html#aff745a3ceadfd32a5a59156b7dc916e4">LayerDimSizes</a>
-, <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1LayerTemporalOrdering.html#a6ccd6a8f66dec2c2a4489b73a5512560">LayerTemporalOrdering</a>
 </li>
 <li>__eq__()
 : <a class="el" href="classarchitecture_1_1Core_1_1Core.html#a4ebc07e33d57e463c0e249dfce215d96">Core</a>
@@ -164,13 +164,13 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 , <a class="el" href="classzigzag_1_1cost__model_1_1cost__model_1_1CostModelEvaluationABC.html#abc1b785959b47505de72feabab160402">CostModelEvaluationABC</a>
 , <a class="el" href="classzigzag_1_1cost__model_1_1cost__model_1_1CumulativeCME.html#ae64f0875afe3067b97ba370b354b9213">CumulativeCME</a>
 , <a class="el" href="classzigzag_1_1cost__model_1_1cost__model__imc_1_1CostModelEvaluationForIMC.html#a438a97e96664b9500b610c905605100a">CostModelEvaluationForIMC</a>
-, <a class="el" href="classzigzag_1_1cost__model_1_1port__activity_1_1PortActivity.html#a53b41a4ba02e2060396f1f99a1591802">PortActivity</a>
+, <a class="el" href="classzigzag_1_1cost__model_1_1port__activity_1_1PortActivity.html#a1c2fee7be8671ceb2262ee5f70161159">PortActivity</a>
 , <a class="el" href="classzigzag_1_1cost__model_1_1port__activity_1_1PortBeginOrEndActivity.html#a68c26fd9c75e7420ca35d02ef90d5b1c">PortBeginOrEndActivity</a>
 , <a class="el" href="classzigzag_1_1datatypes_1_1LayerDim.html#a62899b2921b8dce56eae23683b126261">LayerDim</a>
 , <a class="el" href="classzigzag_1_1datatypes_1_1OADimension.html#a62899b2921b8dce56eae23683b126261">OADimension</a>
 , <a class="el" href="classzigzag_1_1datatypes_1_1OperandABC.html#a62899b2921b8dce56eae23683b126261">OperandABC</a>
 , <a class="el" href="classzigzag_1_1mapping_1_1data__movement_1_1DataMovePattern.html#ac91fd28d4927dae906080d569f9bd0d5">DataMovePattern</a>
-, <a class="el" href="classzigzag_1_1mapping_1_1data__movement_1_1FourWayDataMoving.html#a5dd5aa72579132f7335ea24fe3ca8685">FourWayDataMoving</a>
+, <a class="el" href="classzigzag_1_1mapping_1_1data__movement_1_1FourWayDataMoving.html#ad37c1eb648d9ed838e32ebe9989cfd4d">FourWayDataMoving</a>
 , <a class="el" href="classzigzag_1_1mapping_1_1Mapping_1_1Mapping.html#aafb067288124ec77c29f64d585c21f84">Mapping</a>
 , <a class="el" href="classzigzag_1_1mapping_1_1spatial__mapping_1_1MappingSingleOADim.html#afc169916d4e74bf02263d6a9eb2ea3bc">MappingSingleOADim</a>
 , <a class="el" href="classzigzag_1_1mapping_1_1spatial__mapping_1_1SpatialMapping.html#a110079af25e73e9be25e603c82bcca9a">SpatialMapping</a>
@@ -190,7 +190,6 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 , <a class="el" href="classzigzag_1_1parser_1_1MappingValidator_1_1MappingValidator.html#a98a0e891a48489d44ed1b6952414bd2b">MappingValidator</a>
 , <a class="el" href="classzigzag_1_1parser_1_1onnx_1_1ConvParser_1_1ConvParser.html#a4470190038beee58c6f158f71750d235">ConvParser</a>
 , <a class="el" href="classzigzag_1_1parser_1_1onnx_1_1GemmParser_1_1GemmParser.html#a4470190038beee58c6f158f71750d235">GemmParser</a>
-, <a class="el" href="classzigzag_1_1parser_1_1onnx_1_1MatMulParser_1_1MatMulParser.html#a4470190038beee58c6f158f71750d235">MatMulParser</a>
 , <a class="el" href="classzigzag_1_1parser_1_1onnx_1_1ONNXModelParser_1_1ONNXModelParser.html#a07d50f099181b9433f7416c6bff14fb1">ONNXModelParser</a>
 , <a class="el" href="classzigzag_1_1parser_1_1onnx_1_1ONNXOperatorParser_1_1ONNXOperatorParser.html#a492e2355cfd648ac30ae0374ce563cb2">ONNXOperatorParser</a>
 , <a class="el" href="classzigzag_1_1parser_1_1UpgradedValidator_1_1UpgradedValidator.html#a7056303f2a57a80a33d218c9322c1538">UpgradedValidator</a>
@@ -202,7 +201,6 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 , <a class="el" href="classzigzag_1_1stages_1_1CostModelStage_1_1CostModelStage.html#ad9e5759bee0cae59360cbc96f0c6fec9">CostModelStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1exploit__data__locality__stages_1_1ExploitInterLayerDataLocalityStage.html#a69c84a3c2e3f9e5d67409a68399bcaf2">ExploitInterLayerDataLocalityStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1exploit__data__locality__stages_1_1SearchInterLayerDataLocalityStage.html#aa5fe7dbc5dc934ae627c6f20ae9218cf">SearchInterLayerDataLocalityStage</a>
-, <a class="el" href="classzigzag_1_1stages_1_1LomaStage_1_1LomaStage.html#a1818dd727f53ab87876e8da1ce8d3fa8">LomaStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1MainStage_1_1MainStage.html#ac60991f0f47ecf36514702658e7bb1ed">MainStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1ONNXModelParserStage_1_1ONNXModelParserStage.html#aca7d0366488ffb5be28560f5f0adc06e">ONNXModelParserStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1PEArrayScalingStage_1_1PEArrayScalingStage.html#a97670d0ceb4566e61da9433d1b2dadaa">PEArrayScalingStage</a>
@@ -221,7 +219,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 , <a class="el" href="classzigzag_1_1stages_1_1SpatialMappingConversionStage_1_1SpatialMappingConversionStage.html#a90eb8f465a147f5b7c7fbafc2b375595">SpatialMappingConversionStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1SpatialMappingGeneratorStage_1_1SpatialMappingGeneratorStage.html#aea5fa5a994f7d21385e9d7b5f61c6c50">SpatialMappingGeneratorStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1Stage_1_1Stage.html#ac5a3b9f2a5415eccf32e64d48d397738">Stage</a>
-, <a class="el" href="classzigzag_1_1stages_1_1TemporalOrderingConversionStage_1_1TemporalOrderingConversionStage.html#a1818dd727f53ab87876e8da1ce8d3fa8">TemporalOrderingConversionStage</a>
+, <a class="el" href="classzigzag_1_1stages_1_1temporal__mapping__generator__stage_1_1TemporalMappingGeneratorStage.html#a1818dd727f53ab87876e8da1ce8d3fa8">TemporalMappingGeneratorStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1VisualizationStage_1_1VisualizationStage.html#abab504413e85c79174a5ef6e02cad92e">VisualizationStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1WorkloadParserStage_1_1WorkloadParserStage.html#aca7d0366488ffb5be28560f5f0adc06e">WorkloadParserStage</a>
 , <a class="el" href="classzigzag_1_1stages_1_1WorkloadStage_1_1WorkloadStage.html#a07481c792c3910ea9cee385ec8f4973e">WorkloadStage</a>
@@ -233,7 +231,7 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 , <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1LayerEquation.html#a4cfe7b69def31f6c7fc6055f12316070">LayerEquation</a>
 , <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1LayerOperandPrecision.html#a98cf1d2c202a598f6f40948e64b4df5a">LayerOperandPrecision</a>
 , <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1LayerPadding.html#a60ac3284a901b490b3374300ef02a8f5">LayerPadding</a>
-, <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1LayerTemporalOrdering.html#aa2a6c2bd7441b78b0eabaa69b3e48629">LayerTemporalOrdering</a>
+, <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1LayerTemporalOrdering.html#a53b9d0b3a94eee44a3a500d6e48927e0">LayerTemporalOrdering</a>
 , <a class="el" href="classzigzag_1_1workload_1_1layer__attributes_1_1MemoryOperandLinks.html#ac115f7ffa6262414f48dda0d10b18f3c">MemoryOperandLinks</a>
 , <a class="el" href="classzigzag_1_1workload_1_1layer__node_1_1LayerNode.html#a89b3368dd19728de4b8f079a8042e48c">LayerNode</a>
 , <a class="el" href="classzigzag_1_1workload_1_1layer__node_1_1LoopRelevancyInfo.html#ae64f0875afe3067b97ba370b354b9213">LoopRelevancyInfo</a>
@@ -275,8 +273,8 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 : <a class="el" href="classzigzag_1_1datatypes_1_1OperandABC.html#abc00343aa0378787ab29f21b71cb4809">OperandABC</a>
 </li>
 <li>__mul__()
-: <a class="el" href="classzigzag_1_1cost__model_1_1cost__model_1_1CostModelEvaluationABC.html#a59851e5d66c87bf83c9af490df8e8c11">CostModelEvaluationABC</a>
-, <a class="el" href="classzigzag_1_1mapping_1_1data__movement_1_1FourWayDataMoving.html#a01a61e6b776dbd74b54b46deeaeaeb60">FourWayDataMoving</a>
+: <a class="el" href="classzigzag_1_1cost__model_1_1cost__model_1_1CostModelEvaluationABC.html#a552e79ccaeebe4cbf1e36be4831cf0d7">CostModelEvaluationABC</a>
+, <a class="el" href="classzigzag_1_1mapping_1_1data__movement_1_1FourWayDataMoving.html#af5160777df6201781cf35917d528dc9f">FourWayDataMoving</a>
 </li>
 <li>__repr__()
 : <a class="el" href="classarchitecture_1_1Accelerator_1_1Accelerator.html#aea815b0c6c23fc48a11ee0404b782c7a">Accelerator</a>
