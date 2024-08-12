@@ -4,9 +4,6 @@ var annotated_dup =
       [ "Accelerator", "namespacearchitecture_1_1Accelerator.html", [
         [ "Accelerator", "classarchitecture_1_1Accelerator_1_1Accelerator.html", "classarchitecture_1_1Accelerator_1_1Accelerator" ]
       ] ],
-      [ "Adder", "namespacearchitecture_1_1Adder.html", [
-        [ "Adder", "classarchitecture_1_1Adder_1_1Adder.html", "classarchitecture_1_1Adder_1_1Adder" ]
-      ] ],
       [ "Core", "namespacearchitecture_1_1Core.html", [
         [ "Core", "classarchitecture_1_1Core_1_1Core.html", "classarchitecture_1_1Core_1_1Core" ]
       ] ],
@@ -42,7 +39,7 @@ var annotated_dup =
       ] ],
       [ "operational_unit", "namespacearchitecture_1_1operational__unit.html", [
         [ "OperationalUnit", "classarchitecture_1_1operational__unit_1_1OperationalUnit.html", "classarchitecture_1_1operational__unit_1_1OperationalUnit" ],
-        [ "Multiplier", "classarchitecture_1_1operational__unit_1_1Multiplier.html", "classarchitecture_1_1operational__unit_1_1Multiplier" ]
+        [ "Multiplier", "classarchitecture_1_1operational__unit_1_1Multiplier.html", null ]
       ] ]
     ] ],
     [ "cacti_parser", "namespacecacti__parser.html", [
@@ -108,7 +105,10 @@ var annotated_dup =
             [ "MemoryAllocator", "classzigzag_1_1opt_1_1loma_1_1MemoryAllocator_1_1MemoryAllocator.html", "classzigzag_1_1opt_1_1loma_1_1MemoryAllocator_1_1MemoryAllocator" ]
           ] ],
           [ "multipermute", "namespacezigzag_1_1opt_1_1loma_1_1multipermute.html", [
-            [ "ListElement", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1ListElement.html", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1ListElement" ]
+            [ "ListElement", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1ListElement.html", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1ListElement" ],
+            [ "PermutationConstraint", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1PermutationConstraint.html", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1PermutationConstraint" ],
+            [ "StaticPositionsConstraint", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1StaticPositionsConstraint.html", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1StaticPositionsConstraint" ],
+            [ "StaticPositionsAndSizesConstraint", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1StaticPositionsAndSizesConstraint.html", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1StaticPositionsAndSizesConstraint" ]
           ] ]
         ] ],
         [ "salsa", "namespacezigzag_1_1opt_1_1salsa.html", [
@@ -184,9 +184,6 @@ var annotated_dup =
         ] ],
         [ "ONNXModelParserStage", "namespacezigzag_1_1stages_1_1ONNXModelParserStage.html", [
           [ "ONNXModelParserStage", "classzigzag_1_1stages_1_1ONNXModelParserStage_1_1ONNXModelParserStage.html", "classzigzag_1_1stages_1_1ONNXModelParserStage_1_1ONNXModelParserStage" ]
-        ] ],
-        [ "PEArrayScalingStage", "namespacezigzag_1_1stages_1_1PEArrayScalingStage.html", [
-          [ "PEArrayScalingStage", "classzigzag_1_1stages_1_1PEArrayScalingStage_1_1PEArrayScalingStage.html", "classzigzag_1_1stages_1_1PEArrayScalingStage_1_1PEArrayScalingStage" ]
         ] ],
         [ "PlotTemporalMappingsStage", "namespacezigzag_1_1stages_1_1PlotTemporalMappingsStage.html", [
           [ "PlotTemporalMappingsStage", "classzigzag_1_1stages_1_1PlotTemporalMappingsStage_1_1PlotTemporalMappingsStage.html", "classzigzag_1_1stages_1_1PlotTemporalMappingsStage_1_1PlotTemporalMappingsStage" ]

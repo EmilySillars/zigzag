@@ -3,7 +3,6 @@ var hierarchy =
     [ "Accelerator", "classarchitecture_1_1Accelerator_1_1Accelerator.html", null ],
     [ "AcceleratorFactory", "classzigzag_1_1parser_1_1accelerator__factory_1_1AcceleratorFactory.html", null ],
     [ "AcceleratorValidator", "classzigzag_1_1parser_1_1AcceleratorValidator_1_1AcceleratorValidator.html", null ],
-    [ "Adder", "classarchitecture_1_1Adder_1_1Adder.html", null ],
     [ "CactiConfig", "classarchitecture_1_1get__cacti__cost_1_1CactiConfig.html", null ],
     [ "CactiParser", "classcacti__parser_1_1CactiParser.html", null ],
     [ "Constants", "classzigzag_1_1datatypes_1_1Constants.html", null ],
@@ -73,7 +72,6 @@ var hierarchy =
         [ "AcceleratorParserStage", "classzigzag_1_1stages_1_1AcceleratorParserStage_1_1AcceleratorParserStage.html", null ],
         [ "CostModelStage", "classzigzag_1_1stages_1_1CostModelStage_1_1CostModelStage.html", null ],
         [ "ONNXModelParserStage", "classzigzag_1_1stages_1_1ONNXModelParserStage_1_1ONNXModelParserStage.html", null ],
-        [ "PEArrayScalingStage", "classzigzag_1_1stages_1_1PEArrayScalingStage_1_1PEArrayScalingStage.html", null ],
         [ "PlotTemporalMappingsStage", "classzigzag_1_1stages_1_1PlotTemporalMappingsStage_1_1PlotTemporalMappingsStage.html", null ],
         [ "SalsaStage", "classzigzag_1_1stages_1_1SalsaStage_1_1SalsaStage.html", null ],
         [ "SpatialMappingConversionStage", "classzigzag_1_1stages_1_1SpatialMappingConversionStage_1_1SpatialMappingConversionStage.html", null ],
@@ -139,6 +137,12 @@ var hierarchy =
     [ "TemporalMapping", "classzigzag_1_1mapping_1_1TemporalMapping_1_1TemporalMapping.html", null ],
     [ "WorkloadFactory", "classzigzag_1_1parser_1_1workload__factory_1_1WorkloadFactory.html", null ],
     [ "WorkloadValidator", "classzigzag_1_1parser_1_1WorkloadValidator_1_1WorkloadValidator.html", null ],
+    [ "ABC", null, [
+      [ "PermutationConstraint", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1PermutationConstraint.html", [
+        [ "StaticPositionsAndSizesConstraint", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1StaticPositionsAndSizesConstraint.html", null ],
+        [ "StaticPositionsConstraint", "classzigzag_1_1opt_1_1loma_1_1multipermute_1_1StaticPositionsConstraint.html", null ]
+      ] ]
+    ] ],
     [ "ABCMeta", null, [
       [ "OperationalArrayABC", "classarchitecture_1_1operational__array_1_1OperationalArrayABC.html", null ],
       [ "CostModelEvaluationABC", "classzigzag_1_1cost__model_1_1cost__model_1_1CostModelEvaluationABC.html", null ],
