@@ -1,0 +1,92 @@
+name: snitch-riscv32imafd
+
+
+# Notes from https://kuleuven-micas.github.io/zigzag/hardware.html:
+  # fh: from high, meaning the data is provided by the higher level of memory to be written to the current level of memory
+
+  # th: to high, meaning the data is read out from the current level of memory to go to the higher level of memory
+
+  # fl: from low, meaning the data is provided by the lower level of memory to be written to the current level of memory
+
+  # tl: to low, meaning the data is read out from the current level of memory to go to the lower level of memory
+
+
+memories:
+  # Representing registers x1 - x31 as a single register file of 992 bits.
+  rf_x1_thru_x31:
+    size: 992
+    r_bw: 32
+    w_bw: 32
+    r_cost: 0.02  # TODO
+    w_cost: 0.02  # TODO
+    area: 0
+    r_port: 1
+    w_port: 1
+    rw_port: 0
+    latency: 1
+    auto_cost_extraction: False
+    operands: [I1,I2,O]
+    ports:
+      - fh: w_port_1 # input data FROM L1 can be written to registers
+        tl: r_port_1 # input data can be read from registers to give to TO registers
+      - fh: w_port_1 # weight data FROM L1 can be written to registers
+        tl: r_port_1 # weight data can be read from registers to give to TO registers
+      - fh: w_port_1 # output data FROM registers can be written to registers
+        tl: r_port_1 # output data can be read from registers to give to TO registers
+        th: r_port_1 # output data can be read from registers to give TO L1
+    served_dimensions: [] # every core gets a register file, so not serving any dimensions
+
+# TCDM
+  l1:
+    size: 128000
+    r_bw: 32 # because load/store instructions use 32 bit registers
+    w_bw: 32 # because load/store instructions use 32 bit registers
+    r_cost: 22.9  # TODO # copied from gemm.yaml
+    w_cost: 52.01 # TODO # copied from gemm.yaml
+    area: 0
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 1
+    operands: [I1, I2, O]
+    min_r_granularity: 64
+    min_w_granularity: 64
+    ports:
+      - fh: rw_port_1 # input data FROM L3 can be written to L1
+        tl: rw_port_1 # input data can be read from L1 to give TO registers
+      - fh: rw_port_1 # weight data FROM L3 can be written to L1
+        tl: rw_port_1 # weight data can be read from L1 to give TO registers
+      - th: rw_port_1 # output data can be read from L1 to give TO L3
+        fl: rw_port_1 # output data FROM registers can be written to L1
+    served_dimensions: [D1]
+
+# Last level memory
+  l3:
+    size: 2147483648
+    r_bw: 512
+    w_bw: 512
+    r_cost: 700  # TODO
+    w_cost: 750  # TODO
+    area: 0
+    r_port: 0
+    w_port: 0
+    rw_port: 1
+    latency: 1
+    operands: [I1, I2, O]
+    ports:
+      - fl: rw_port_1
+        tl: rw_port_1
+      - fl: rw_port_1
+        tl: rw_port_1
+      - fh: rw_port_1
+        tl: rw_port_1
+        fl: rw_port_1
+        th: rw_port_1
+    served_dimensions: [D1]
+
+operational_array:
+  input_precision: [8, 8]
+  multiplier_energy: 0.04 # pJ # copied from gemm.yaml
+  multiplier_area: 1 # unit
+  dimensions: [D1]
+  sizes: [8] 
