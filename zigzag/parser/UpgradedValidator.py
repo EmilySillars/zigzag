@@ -4,10 +4,10 @@ Copyright jdotjdot (https://github.com/pyeve/cerberus/issues/220#issuecomment-20
 
 import copy
 from typing import Any
-from cerberus import Validator  # type: ignore
 
 # using Cerberus 0.9.2
 import six
+from cerberus import Validator  # type: ignore
 
 
 class UpgradedValidator(Validator):
@@ -20,14 +20,13 @@ class UpgradedValidator(Validator):
         self.is_array: bool = kwargs.get("is_array", False)
         super(UpgradedValidator, self).__init__(*args, **kwargs)
 
-    def validate(
+    def validate(  # pylint: disable=W0237
         self,
         document: list[dict[str, Any]],
         schema: dict[str, Any] | None = None,
         update: bool = False,
         context: Any | None = None,
     ) -> bool:
-
         # This gets confusing because this method seems to be called internally for validation as well
         # and we don't want to add "rows" to sub-schemas as well, only the
         # top-level.
@@ -39,12 +38,18 @@ class UpgradedValidator(Validator):
                 if "type" in schema:  # is a list
                     schema = {"rows": {"type": "list", "required": True, "schema": schema}}
                 else:  # is a dict
-                    schema = {"rows": {"type": "list", "required": True, "schema": {"type": "dict", "schema": schema}}}
+                    schema = {
+                        "rows": {
+                            "type": "list",
+                            "required": True,
+                            "schema": {"type": "dict", "schema": schema},
+                        }
+                    }
 
-            if "rows" not in document:  # type: ignore
-                document_dict = {"rows": document}
-            else:
-                document_dict = document
+        if "rows" not in document:  # type: ignore
+            document_dict = {"rows": document}
+        else:
+            document_dict = document
         return super(UpgradedValidator, self).validate(document_dict, schema, update, context)  # type: ignore
 
     @property

@@ -1,9 +1,8 @@
 import os
 from typing import Any
 
-
-from zigzag.stages.Stage import Stage, StageCallable
 from zigzag.cost_model.cost_model import CostModelEvaluation, CostModelEvaluationABC
+from zigzag.stages.Stage import Stage, StageCallable
 from zigzag.visualization.results.plot_cme import (
     bar_plot_cost_model_evaluations_breakdown,
 )
@@ -12,7 +11,13 @@ from zigzag.visualization.results.plot_cme import (
 class PlotTemporalMappingsStage(Stage):
     """! Class that passes through all results yielded by substages, but keeps the TMs cme's and saves a plot."""
 
-    def __init__(self, list_of_callables: list[StageCallable], *, plot_filename_pattern: str, **kwargs: Any):
+    def __init__(
+        self,
+        list_of_callables: list[StageCallable],
+        *,
+        plot_filename_pattern: str,
+        **kwargs: Any,
+    ):
         """
         @param list_of_callables: see Stage
         @param dump_folder: filename string formatting pattern, which can use named field whose values will be

@@ -34,22 +34,71 @@
 # of Variables by Prefix Shifts."  Aaron Williams, 2009
 
 
+from abc import ABC, abstractmethod
 from typing import Any
+
+from zigzag.datatypes import LayerDim
 
 
 class ListElement:
-
-    def __init__(self, value: Any, next: Any):
+    def __init__(self, value: Any, next_elem: Any):
         self.value = value
-        self.next = next
+        self.next_elem = next_elem
 
     def nth(self, n: int):
         o = self
         i = 0
-        while i < n and o.next is not None:
-            o = o.next
+        while i < n and o.next_elem is not None:
+            o = o.next_elem
             i += 1
         return o
+
+
+class PermutationConstraint(ABC):
+    """! An abstract class to represent a constraint on a permutation."""
+
+    @abstractmethod
+    def is_valid(self, permutation: list[Any]) -> bool:
+        ...
+
+    @abstractmethod
+    def is_empty(self) -> bool:
+        ...
+
+
+class StaticPositionsConstraint(PermutationConstraint):
+    """! A class to represent a constraint on a permutation that requires
+    a predefined order for some or all elements."""
+
+    static_positions: dict[int, LayerDim]
+
+    def __init__(self, static_positions: dict[int, LayerDim]):
+        self.static_positions = static_positions
+
+    def is_valid(self, permutation: list[Any]) -> bool:
+        return all(permutation[position][0] == item for position, item in self.static_positions.items())
+
+    def is_empty(self):
+        return not self.static_positions or len(self.static_positions) == 0
+
+
+class StaticPositionsAndSizesConstraint(PermutationConstraint):
+    """! A class to represent a constraint on a permutation
+    that requires a predefined order and size for some or all elements."""
+
+    static_positions_and_sizes: dict[int, tuple[LayerDim, int]]
+
+    def __init__(self, static_positions_and_sizes: dict[int, tuple[LayerDim, int]]):
+        self.static_positions_and_sizes = static_positions_and_sizes
+
+    def is_valid(self, permutation: list[Any]) -> bool:
+        return all(
+            permutation[position][0] == item and permutation[position][1] == size
+            for position, (item, size) in self.static_positions_and_sizes.items()
+        )
+
+    def is_empty(self):
+        return not self.static_positions_and_sizes or len(self.static_positions_and_sizes) == 0
 
 
 def init(multiset: list[Any]):
@@ -63,27 +112,48 @@ def init(multiset: list[Any]):
 def visit(h: ListElement) -> list[Any]:
     """! Converts our bespoke linked list to a python list."""
     o = h
-    l: list[Any] = []
+    this_list: list[Any] = []
     while o is not None:
-        l.append(o.value)
-        o = o.next
-    return l
+        this_list.append(o.value)
+        o = o.next_elem
+    return this_list
+
+
+def constrainded_permutations(multiset: list[Any], constraints: list[PermutationConstraint]):
+    """! Generator providing all multiset permutations of a multiset with constraints."""
+    h, i, j = init(multiset)
+    if all(constr.is_valid(visit(h)) for constr in constraints):
+        yield visit(h)
+    while j.next_elem is not None or j.value < h.value:
+        if j.next_elem is not None and i.value >= j.next_elem.value:
+            s = j
+        else:
+            s = i
+        t = s.next_elem
+        s.next_elem = t.next_elem
+        t.next_elem = h
+        if t.value < h.value:
+            i = t
+        j = i.next_elem
+        h = t
+        if all(constr.is_valid(visit(h)) for constr in constraints):
+            yield visit(h)
 
 
 def permutations(multiset: list[Any]):
     """! Generator providing all multiset permutations of a multiset."""
     h, i, j = init(multiset)
     yield visit(h)
-    while j.next is not None or j.value < h.value:
-        if j.next is not None and i.value >= j.next.value:
+    while j.next_elem is not None or j.value < h.value:
+        if j.next_elem is not None and i.value >= j.next_elem.value:
             s = j
         else:
             s = i
-        t = s.next
-        s.next = t.next
-        t.next = h
+        t = s.next_elem
+        s.next_elem = t.next_elem
+        t.next_elem = h
         if t.value < h.value:
             i = t
-        j = i.next
+        j = i.next_elem
         h = t
         yield visit(h)

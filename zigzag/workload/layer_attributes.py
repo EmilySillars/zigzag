@@ -1,20 +1,28 @@
-import math
+import logging
 import re
+from collections import defaultdict
+from math import prod
 from typing import TypeAlias
 
-
-from zigzag.workload.LayerAttribute import LayerAttribute
 from zigzag.datatypes import (
     Constants,
-    LayerOperand,
     LayerDim,
-    MemoryOperand,
+    LayerOperand,
     LoopList,
+    MemoryOperand,
     PrLoop,
     PrScalingFactors,
     UnrollFactor,
     UnrollFactorInt,
 )
+from zigzag.opt.loma.multipermute import (
+    PermutationConstraint,
+    StaticPositionsAndSizesConstraint,
+    StaticPositionsConstraint,
+)
+from zigzag.workload.LayerAttribute import LayerAttribute
+
+logger = logging.getLogger(__name__)
 
 InputOperandSource: TypeAlias = dict[LayerOperand, int]
 
@@ -43,9 +51,7 @@ class LayerEquation(LayerAttribute):
         """! Return a list with all LayerDims that are `relevant` for the given LayerOperand"""
         layer_operands = self.get_contained_operands()
         assert layer_op in layer_operands, f"Given LayerOperand {layer_op} is not part of this equation"
-        assert layer_op in layer_operands, f"Given LayerOperand {layer_op} is not part of this equation"
         layer_op_idx = layer_operands.index(layer_op)
-        slice_indices = self.__get_operand_start_indices() + [len(self.disassembly) + 1]
         slice_indices = self.__get_operand_start_indices() + [len(self.disassembly) + 1]
         disassembly_start_idx = slice_indices[layer_op_idx] + 1
         disassembly_end_idx = slice_indices[layer_op_idx + 1] - 1
@@ -66,7 +72,7 @@ class LayerDimSizes(LayerAttribute):
 
     @property
     def total_size(self) -> UnrollFactor:
-        return math.prod(self.data.values())
+        return prod(self.data.values())
 
     def items(self):
         return self.data.items()
@@ -74,7 +80,7 @@ class LayerDimSizes(LayerAttribute):
     def copy(self):
         return LayerDimSizes(self.data.copy())
 
-    def __setitem__(self, key: LayerDim, value: int):
+    def __setitem__(self, key: LayerDim, value: UnrollFactor):
         self.data[key] = value
 
     def __delitem__(self, key: LayerDim):
@@ -90,6 +96,9 @@ class LayerOperandPrecision(LayerAttribute):
     def __init__(self, data: dict[LayerOperand, int]):
         self.data = data
 
+    def __getitem__(self, layer_op: LayerOperand):
+        return self.data[layer_op]
+
     @property
     def final_output_precision(self) -> int:
         """! Return the precision of either the final output (if defined by user) or the intermediate output"""
@@ -103,33 +112,27 @@ class MemoryOperandLinks(LayerAttribute):
 
     def __init__(self, data: dict[LayerOperand, MemoryOperand]):
         self.data = data
+        # Class variables are computed and stored once to improve runtime performance
+        self.layer_operands = list(self.data.keys())
+        self.mem_operands = list(self.data.values())
+        self.__mem_to_layer_op_dict = {self.data[layer_op]: layer_op for layer_op in self.layer_operands}
+        assert len(self.__mem_to_layer_op_dict) == len(self.data), "MemoryOperandLinks contains duplicate MemoryOperand"
 
     def layer_to_mem_op(self, layer_op: LayerOperand) -> MemoryOperand:
-        assert self.contains_layer_op(layer_op)
         return self.data[layer_op]
 
     def mem_to_layer_op(self, mem_op: MemoryOperand) -> LayerOperand:
-        """! Given a MemoryOperand, return the linked LayerOperand or None if the MemoryOperand is not contained
-        within"""
-        assert self.contains_mem_op(mem_op)
-        candidates = {k for k, v in self.data.items() if v == mem_op}
-        assert len(candidates) <= 1, f"MemoryOperandLinks contains duplicate MemoryOperand {mem_op}"
-        assert len(candidates) > 0, f"Memory operand {mem_op} is not present"
-        return candidates.pop()
+        """! Given a MemoryOperand, return the linked LayerOperand"""
+        return self.__mem_to_layer_op_dict[mem_op]
+
+    def layer_and_mem_ops(self):
+        return self.data.items()
 
     def contains_layer_op(self, layer_op: LayerOperand) -> bool:
         return layer_op in self.layer_operands
 
     def contains_mem_op(self, mem_op: MemoryOperand) -> bool:
         return mem_op in self.mem_operands
-
-    @property
-    def layer_operands(self) -> set[LayerOperand]:
-        return set(self.data.keys())
-
-    @property
-    def mem_operands(self) -> set[MemoryOperand]:
-        return set(self.data.values())
 
     def copy(self):
         return MemoryOperandLinks(self.data.copy())
@@ -143,7 +146,14 @@ class LayerDimRelation(LayerAttribute):
     dimension) and the loop dimension is required. e.g. `dim1 = coef2 * dim2 + coef3 * dim3`
     """
 
-    def __init__(self, dim_1: LayerDim, dim_2: LayerDim, dim_3: LayerDim, coef_2: int, coef_3: int):
+    def __init__(
+        self,
+        dim_1: LayerDim,
+        dim_2: LayerDim,
+        dim_3: LayerDim,
+        coef_2: int,
+        coef_3: int,
+    ):
         self.dim_1 = dim_1
         self.dim_2 = dim_2
         self.dim_3 = dim_3
@@ -152,7 +162,9 @@ class LayerDimRelation(LayerAttribute):
         self.data = f"{dim_1} = {coef_2}*{dim_2} + {coef_3}*{dim_3}"
 
     @staticmethod
-    def extract_pr_loop_info(relations: list["LayerDimRelation"]) -> tuple[PrLoop, LoopList, PrScalingFactors]:
+    def extract_pr_loop_info(
+        relations: list["LayerDimRelation"],
+    ) -> tuple[PrLoop, LoopList, PrScalingFactors]:
         """!
         # TODO requires cleanup and documentation
         """
@@ -161,32 +173,83 @@ class LayerDimRelation(LayerAttribute):
         pr_scaling_factors: PrScalingFactors = {}
 
         for relation in relations:
-            key = relation.dim_1
-            val = [relation.dim_2, relation.dim_3]
+            pr_loop[relation.dim_1] = (relation.dim_2, relation.dim_3)
+            pr_loop_list.extend([relation.dim_1, relation.dim_2, relation.dim_3])
+            scaling_factors = (
+                (relation.dim_2, relation.coef_2),
+                (relation.dim_3, relation.coef_3),
+            )
 
-        for relation in relations:
-            key = relation.dim_1
-            val = [relation.dim_2, relation.dim_3]
-            pr_loop[key] = val
-            pr_loop_list.extend([key] + val)
-            scaling_factors = {relation.dim_2: relation.coef_2, relation.dim_3: relation.coef_3}
-            scaling_factors = {relation.dim_2: relation.coef_2, relation.dim_3: relation.coef_3}
-            pr_scaling_factors[key] = scaling_factors
+            pr_scaling_factors[relation.dim_1] = scaling_factors
 
         return pr_loop, pr_loop_list, pr_scaling_factors
 
 
 class LayerTemporalOrdering(LayerAttribute):
+    """Represents a user-defined temporal ordering"""
 
-    def __init__(self, data: dict[str, UnrollFactorInt]):
-        self.data = [[LayerDim(loop[0]), loop[1]] for loop in data]
+    def __init__(self, data: list[list[str | UnrollFactorInt]]):
+        """data will look like:
+        [['K', 12],
+         ['C',  3]]
+        """
+        self.data = [(LayerDim(str(loop[0])), int(loop[1]) if isinstance(loop[1], int) else None) for loop in data]
 
     @staticmethod
     def empty():
-        return LayerTemporalOrdering({})
+        return LayerTemporalOrdering([])
 
-    def __delitem__(self, x: LayerDim):
-        del self.data[x]
+    def is_empty(self):
+        return len(self.data) == 0
+
+    def is_complete(self, temporal_loop_sizes: dict[LayerDim, UnrollFactor]):
+        """Return wether this temporal ordering matches the given, mandatory loop sizes"""
+        all_loops: defaultdict[LayerDim, UnrollFactor] = defaultdict(lambda: 1)
+        for layer_dim, factor in self.data:
+            if not isinstance(factor, int):
+                return False
+            else:
+                all_loops[layer_dim] *= factor
+
+        for layer_dim in all_loops:
+            if all_loops[layer_dim] == 1:
+                del all_loops[layer_dim]
+
+        return all_loops == temporal_loop_sizes
+
+    def remove_invalid_layer_dims(self, layer_dim_sizes: LayerDimSizes, layer_name: str = ""):
+        for i, mapping in list(enumerate(self.data))[::-1]:
+            if mapping[0] not in layer_dim_sizes.layer_dims:
+                logger.warning(
+                    "Supplied temporal ordering %s%s thrown out because layer dimension is not present in " "the layer",
+                    mapping,
+                    "" if layer_name == "" else f" for layer {layer_name}",
+                )
+                del self.data[i]
+
+    def to_legacy_format(self):
+        return self.data
+
+    def get_constraints(self) -> list[PermutationConstraint]:
+        static_posistions_dict: dict[int, LayerDim] = {}
+        static_posistions_and_sizes_dict: dict[int, tuple[LayerDim, int]] = {}
+        outer_loop = False
+        for count, (layer_dim, factor) in enumerate(self.data):
+            if (layer_dim == Constants.UNKNOWN_DIM_OPERATOR) and (factor is None):
+                outer_loop = True
+            elif factor is None:
+                if not outer_loop:
+                    static_posistions_dict[count] = layer_dim
+                else:
+                    static_posistions_dict[count - len(self.data)] = layer_dim
+            else:
+                if not outer_loop:
+                    static_posistions_and_sizes_dict[count] = (layer_dim, factor)
+                else:
+                    static_posistions_and_sizes_dict[count - len(self.data)] = (layer_dim, factor)
+        static_positions = StaticPositionsConstraint(static_posistions_dict)
+        static_posistions_and_sizes = StaticPositionsAndSizesConstraint(static_posistions_and_sizes_dict)
+        return [static_positions, static_posistions_and_sizes]
 
 
 class LayerPadding(LayerAttribute):

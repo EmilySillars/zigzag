@@ -1,10 +1,11 @@
 import logging
+
+from zigzag.cost_model.cost_model import CostModelEvaluation
 from zigzag.hardware.architecture.Accelerator import Accelerator
 from zigzag.hardware.architecture.ImcArray import ImcArray
 from zigzag.mapping.SpatialMappingInternal import SpatialMappingInternal
 from zigzag.mapping.TemporalMapping import TemporalMapping
 from zigzag.utils import json_repr_handler
-from zigzag.cost_model.cost_model import CostModelEvaluation
 from zigzag.workload.layer_node import LayerNode
 
 logger = logging.getLogger(__name__)
@@ -88,7 +89,8 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
         1) As we already calculated the ideal data transfer rate in combined_mapping.py (in the Mapping class),
         here we start with calculating the required (or allowed) memory updating window by comparing the effective
         data size with the physical memory size at each level. If the effective data size is smaller than 50%
-        of the physical memory size, then we take the whole period as the allowed memory updating window (double buffer effect);
+        of the physical memory size, then we take the whole period as the allowed memory updating window (double buffer
+        effect);
         otherwise we take the the period divided by the top_ir_loop as the allowed memory updating window.
 
         2) Then, we compute the real data transfer rate given the actual memory bw per functional port pair,
@@ -100,7 +102,7 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
         4) Finally, we combine the stall/slack of each memory port to get the final latency.
         """
         super().calc_double_buffer_flag()
-        super().calc_allowed_and_real_data_transfer_cycle_per_DTL()
+        super().calc_allowed_and_real_data_transfer_cycle_per_data_transfer_link()
         # Update the latency model to fit IMC requirement
         super().combine_data_transfer_rate_per_physical_port()
         self.update_tclk()
@@ -119,7 +121,7 @@ class CostModelEvaluationForIMC(CostModelEvaluation):
         # latency_total0 breakdown
         computation_breakdown = {
             "mac_computation": self.ideal_temporal_cycle,
-            "memory_stalling": self.SS_comb,
+            "memory_stalling": self.stall_slack_comb,
         }
 
         return json_repr_handler(

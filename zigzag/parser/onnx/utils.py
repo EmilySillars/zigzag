@@ -1,10 +1,10 @@
 import logging
 from dataclasses import dataclass
-from enum import auto
+from enum import Enum, auto
 from typing import Any, List
-from enum import Enum
+
 import onnx
-from onnx import AttributeProto, helper, compose, ModelProto, GraphProto, NodeProto, TypeProto
+from onnx import AttributeProto, GraphProto, ModelProto, NodeProto, TypeProto, compose, helper, numpy_helper
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ def unroll_branches(graph: GraphProto) -> GraphProto:
             g0_source = g0.node[0]
             input_name = g0_source.input[0]
             value_info = next(i for i in graph.value_info if i.name == input_name)
-            # Add value info to originalg graph output if it's not present
+            # Add value info to original graph output if it's not present
             if input_name not in [vi.name for vi in graph.output]:
                 graph.output.extend([value_info])
             # Add value info to subgraph input if it's not present
@@ -83,9 +83,7 @@ def parse_dynamic_onnx_model(model: ModelProto) -> ModelProto:
 
 
 def get_attribute_ints_with_name(name: str, attrs: Any, default: list[int] | int | None = None) -> list[int] | int:
-    """! Retrieves the attrs[name_idx].ints from attrs.
-    If attrs[name_idx] is of type INTS, attrs[name_idx].ints is returned.
-    If attrs[name_idx] is of type INT, attrs[name_idx].i is returned.
+    """! Return the value of an attribute of given name from the given attributes
     If name does not exist in attrs, the default provided by the caller is used.
     If the caller doesn't supply a default, an error is thrown.
 
@@ -93,47 +91,52 @@ def get_attribute_ints_with_name(name: str, attrs: Any, default: list[int] | int
     attrs_names = [attr.name for attr in attrs]
     try:
         name_idx = attrs_names.index(name)
-        attr_type = attrs[name_idx].type
+        value = attrs[name_idx]
+        attr_type = value.type
         if attr_type == AttributeProto.AttributeType.INT:  # type: ignore
-            return int(attrs[name_idx].i)
+            return int(value.i)
         elif attr_type == AttributeProto.AttributeType.INTS:  # type: ignore
-            return list(attrs[name_idx].ints)
+            return list(value.ints)
+        elif attr_type == AttributeProto.AttributeType.TENSOR:  # type: ignore
+            return list(numpy_helper.to_array(value.t).tolist())  # type: ignore
         else:
             raise NotImplementedError(f"Attribute extraction of type {attr_type} not supported.")
-    except ValueError:
+    except ValueError as exc:
         if default is not None:
             return default
         else:
-            raise ValueError(f"attrs has no attribute called {name} and no default was given. Names = {attrs_names}.")
+            raise ValueError(
+                f"attrs has no attribute called {name} and no default was given. Names = {attrs_names}."
+            ) from exc
 
 
 class OnnxTensorCategory(Enum):
+    """Internal representation of ONNX tensor category"""
 
-    Input = auto()
-    Output = auto()
-    Hidden = auto()
-    Constant = auto()
+    INPUT = auto()
+    OUTPUT = auto()
+    HIDDEN = auto()
+    CONSTANT = auto()
 
     @property
     def is_output(self):
-        return self == OnnxTensorCategory.Output
+        return self == OnnxTensorCategory.OUTPUT
 
     @property
     def is_input(self):
-        return self == OnnxTensorCategory.Input
+        return self == OnnxTensorCategory.INPUT
 
     @property
     def is_hidden(self):
-        return self == OnnxTensorCategory.Hidden
+        return self == OnnxTensorCategory.HIDDEN
 
     @property
     def is_constant(self):
-        return self == OnnxTensorCategory.Constant
+        return self == OnnxTensorCategory.CONSTANT
 
 
 @dataclass
 class OnnxTensorType:
-
     shape: List[int]
     elem_type: int
     category: OnnxTensorCategory
@@ -147,22 +150,22 @@ class OnnxTensorType:
 
 
 def get_onnx_tensor_type(name: str, model: ModelProto):
-    for input in model.graph.input:
-        if input.name == name:
-            return OnnxTensorType.from_tensor_type(input.type.tensor_type, OnnxTensorCategory.Input)
+    for input_value in model.graph.input:
+        if input_value.name == name:
+            return OnnxTensorType.from_tensor_type(input_value.type.tensor_type, OnnxTensorCategory.INPUT)
 
     for output in model.graph.output:
         if output.name == name:
-            return OnnxTensorType.from_tensor_type(output.type.tensor_type, OnnxTensorCategory.Output)
+            return OnnxTensorType.from_tensor_type(output.type.tensor_type, OnnxTensorCategory.OUTPUT)
 
     for value_info in model.graph.value_info:
         if value_info.name == name:
-            return OnnxTensorType.from_tensor_type(value_info.type.tensor_type, OnnxTensorCategory.Hidden)
+            return OnnxTensorType.from_tensor_type(value_info.type.tensor_type, OnnxTensorCategory.HIDDEN)
 
     for init in model.graph.initializer:
         if init.name == name:
             # initializers are represented a bit differently from other tensors
-            return OnnxTensorType(list(init.dims), init.data_type, OnnxTensorCategory.Constant)
+            return OnnxTensorType(list(init.dims), init.data_type, OnnxTensorCategory.CONSTANT)
 
     raise KeyError(
         f""

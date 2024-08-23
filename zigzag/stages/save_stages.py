@@ -1,10 +1,14 @@
-from typing import Any
-import os
-import pickle
 import json
 import logging
+import os
+import pickle
+from typing import Any
 
-from zigzag.cost_model.cost_model import CostModelEvaluation, CostModelEvaluationABC, CumulativeCME
+from zigzag.cost_model.cost_model import (
+    CostModelEvaluation,
+    CostModelEvaluationABC,
+    CumulativeCME,
+)
 from zigzag.stages.Stage import Stage, StageCallable
 from zigzag.utils import json_repr_handler
 
@@ -110,7 +114,13 @@ class SimpleSaveStage(Stage):
 class PickleSaveStage(Stage):
     """! Class that dumps all received CMEs into a list and saves that list to a pickle file."""
 
-    def __init__(self, list_of_callables: list[StageCallable], *, pickle_filename: str, **kwargs: Any):
+    def __init__(
+        self,
+        list_of_callables: list[StageCallable],
+        *,
+        pickle_filename: str,
+        **kwargs: Any,
+    ):
         """
         @param list_of_callables: see Stage
         @param pickle_filename: output pickle filename
@@ -133,10 +143,14 @@ class PickleSaveStage(Stage):
         dirname = os.path.dirname(self.pickle_filename)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
-        with open(self.pickle_filename, "wb") as handle:
-            pickle.dump(all_cmes, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        logger.info(
-            "Saved pickled list of %i CMEs to %s.",
-            len(all_cmes),
-            self.pickle_filename,
-        )
+
+        try:
+            with open(self.pickle_filename, "wb") as handle:
+                pickle.dump(all_cmes, handle, protocol=pickle.HIGHEST_PROTOCOL)  # type: ignore
+            logger.info(
+                "Saved pickled list of %i CMEs to %s.",
+                len(all_cmes),  # type: ignore
+                self.pickle_filename,
+            )
+        except NameError:
+            logger.warning("No CMEs found to save in PickleSaveStage")

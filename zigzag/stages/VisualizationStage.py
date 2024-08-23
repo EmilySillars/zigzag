@@ -1,6 +1,6 @@
+import logging
 from contextlib import redirect_stdout
 from typing import Any
-import logging
 
 from zigzag.cost_model.cost_model import CostModelEvaluation
 from zigzag.stages.Stage import Stage, StageCallable
@@ -48,6 +48,7 @@ class VisualizationStage(Stage):
 
     def __save_mem_hierarchy(self, cme: CostModelEvaluation):
         visualize_memory_hierarchy_graph(
-            cme.accelerator.cores[0].memory_hierarchy, save_path=self.dump_folder + "/mem_hierarchy.png"
+            cme.accelerator.cores[0].memory_hierarchy,
+            save_path=self.dump_folder + "/mem_hierarchy.png",
         )
         self.figure_is_saved = True

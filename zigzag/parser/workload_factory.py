@@ -1,9 +1,19 @@
-import re
 import logging
+import re
 from typing import Any
 
-from zigzag.datatypes import LayerDim, LayerOperand, MemoryOperand, OADimension, UnrollFactor
-from zigzag.mapping.spatial_mapping import MappingSingleOADim, SpatialMapping, SpatialMappingHint
+from zigzag.datatypes import (
+    LayerDim,
+    LayerOperand,
+    MemoryOperand,
+    OADimension,
+    UnrollFactor,
+)
+from zigzag.mapping.spatial_mapping import (
+    MappingSingleOADim,
+    SpatialMapping,
+    SpatialMappingHint,
+)
 from zigzag.parser.WorkloadValidator import WorkloadValidator
 from zigzag.utils import UniqueMessageFilter
 from zigzag.workload.DNNWorkload import DNNWorkload
@@ -78,6 +88,7 @@ class LayerNodeFactory:
         core_allocation_is_fixed = mapping_factory.get_core_allocation_is_fixed()
         memory_operand_links = mapping_factory.create_memory_operand_links()
         temporal_ordering = mapping_factory.create_temporal_ordering()
+        temporal_ordering.remove_invalid_layer_dims(layer_dim_sizes, self.node_name)
 
         return LayerNodeAttributes(
             layer_type=layer_type,
@@ -194,7 +205,10 @@ class MappingFactory:
             self.mapping_data: dict[str, Any] = next(filter(lambda x: x["name"] == operation_type, mapping_data))
         else:
             self.mapping_data = next(filter(lambda x: x["name"] == "default", mapping_data))
-            logger.warning("Operator %s not defined in mapping. Using default mapping instead.", operation_type)
+            logger.warning(
+                "Operator %s not defined in mapping. Using default mapping instead.",
+                operation_type,
+            )
 
     def get_core_allocation(self) -> list[int]:
         return self.mapping_data["core_allocation"]
