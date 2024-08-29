@@ -4,7 +4,12 @@ import re
 from zigzag.api import get_hardware_performance_zigzag
 from zigzag.parser.arguments import get_arg_parser
 
-# for the gemm accelerator example, we use the following options
+# for the gemm accelerator 16x16 example, we use the following options
+# --model=zigzag/inputs/workload/matmul-16-x-16.yaml \
+# --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml \
+# --accelerator=zigzag/inputs/hardware/gemm.yaml
+
+# for the gemm accelerator 104x104 example, we use the following options
 # --model=zigzag/inputs/workload/matmul-104-x-104.yaml \
 # --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml \
 # --accelerator=zigzag/inputs/hardware/gemm.yaml

@@ -1,0 +1,15 @@
+- id: 0 
+  name: matmul_16_x_16  # name can be used to specify mapping
+  operator_type: MatMul  # operator_type can be used to specify mapping
+  equation: O[a][b]+=I[a][c]*W[c][b]
+  dimension_relations: []
+  loop_dims: [A,B,C]
+  loop_sizes: [16, 16, 16]
+  operand_precision:
+    W: 8
+    I: 8
+    O: 32
+    O_final: 32
+  operand_source:
+    I: 0
+    W: 0

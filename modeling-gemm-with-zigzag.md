@@ -92,3 +92,93 @@ Spatial Loops
 --------------------------------------------------------------
 ```
 
+## Manual Examples
+
+For each example, the 
+
+- Hardware Description: [zigzag/inputs/hardware/gemm.yaml](zigzag/inputs/hardware/gemm.yaml)
+- Default Mapping File: [matmul-104-x-104-empty-mapping.yaml](zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml)
+- location to dump output: `outputs/`
+- Main File: [main_zigzag_integration.py](main_zigzag_integration.py)
+
+all remain the same. The only change is the workload file...
+
+### I. Matmul 16 x 16
+
+Workload File: [matmul-16-x-16.yaml](zigzag/inputs/workload/matmul-16-x-16.yaml)
+
+Command:
+
+```
+python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-16-x-16.yaml --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml --accelerator=zigzag/inputs/hardware/gemm.yaml
+```
+
+Output:
+
+```
+cat outputs/gemm-matmul-16-x-16/loop_ordering.txt 
+```
+
+```
+Loop ordering for matmul_16_x_16
+==============================================================
+Temporal Loops                  O         W         I         
+==============================================================
+for A in [0, 2):                l1        l1        l1        
+--------------------------------------------------------------
+  for B in [0, 2):              l1        l1        l1        
+--------------------------------------------------------------
+    for C in [0, 2):            reg_O     l1        l1        
+--------------------------------------------------------------
+==============================================================
+Spatial Loops                                                 
+==============================================================
+      parfor B in [0, 8):                                     
+--------------------------------------------------------------
+      parfor A in [0, 8):                                     
+--------------------------------------------------------------
+      parfor C in [0, 8):                                     
+--------------------------------------------------------------
+```
+
+
+
+### II. Matmul 104 x 104
+
+Workload File: [matmul-104-x-104.yaml](zigzag/inputs/workload/matmul-104-x-104.yaml)
+
+Command:
+
+```
+python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-104-x-104.yaml --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml --accelerator=zigzag/inputs/hardware/gemm.yaml
+```
+
+Output:
+
+```
+cat outputs/gemm-matmul-104-x-104/loop_ordering.txt 
+```
+
+```
+Loop ordering for matmul_104_104
+==============================================================
+Temporal Loops                  O         W         I         
+==============================================================
+for A in [0, 13):               l3        l1        l1        
+--------------------------------------------------------------
+  for B in [0, 13):             l1        l1        l1        
+--------------------------------------------------------------
+    for C in [0, 13):           reg_O     l1        l1        
+--------------------------------------------------------------
+==============================================================
+Spatial Loops                                                 
+==============================================================
+      parfor A in [0, 8):                                     
+--------------------------------------------------------------
+      parfor B in [0, 8):                                     
+--------------------------------------------------------------
+      parfor C in [0, 8):                                     
+--------------------------------------------------------------
+```
+
+### 
