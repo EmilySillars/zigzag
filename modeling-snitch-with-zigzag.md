@@ -44,13 +44,30 @@ To run ZigZag, you need to specify a **hardware description**, a **workload**, a
 - location to dump output: `outputs/`
 - Main File: [main_zigzag_integration.py](main_zigzag_integration.py)
 
-### II. Command to run:
+### II. Commands to run:
+
+General Form:
+
+```
+python main_zigzag_integration.py --model=<path-to-workload-filename.yaml> --mapping=<path-to-mapping-file.yaml> --accelerator=<path-to-hardware-description.yaml>
+```
+
+```
+cat outputs/snitch-cluster-only-integers-<workload-filename-without-file-extension>/loop_ordering.txt 
+```
+
+Example:
 
 ```
 python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-104-x-104.yaml --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml --accelerator=zigzag/inputs/hardware/snitch-cluster-only-integers.yaml
 ```
 
-### III. Output:
+```
+cat outputs/snitch-cluster-only-integers-matmul-104-x-104/loop_ordering.txt 
+```
+
+### III. Example Output:
+
 ```
 python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-104-x-104.yaml --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml --accelerator=zigzag/inputs/hardware/snitch-cluster-only-integers.yaml
 2024-08-23 19:56:28,105 - zigzag.parser.workload_factory.__init__ +208 - WARNING - Operator MatMul not defined in mapping. Using default mapping instead.
@@ -90,6 +107,84 @@ for A in [0, 8):                  l3                 l1                 l3
 Spatial Loops                                                                              
 ===========================================================================================
             parfor B in [0, 8):                                                            
+-------------------------------------------------------------------------------------------
+```
+
+### IV. More Example Runs
+
+#### matmul 512 x 512
+
+Commands Run:
+
+```
+python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-512-x-512.yaml --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml --accelerator=zigzag/inputs/hardware/snitch-cluster-only-integers.yaml
+```
+
+```
+cat outputs/snitch-cluster-only-integers-matmul-512-x-512/loop_ordering.txt 
+```
+
+Relevant Output:
+
+```
+Loop ordering for matmul_512_512
+===========================================================================================
+Temporal Loops                    O                  W                  I                  
+===========================================================================================
+for A in [0, 32):                 l3                 l3                 l3                 
+-------------------------------------------------------------------------------------------
+  for B in [0, 4):                l3                 l3                 l1                 
+-------------------------------------------------------------------------------------------
+    for B in [0, 16):             l3                 l3                 l1                 
+-------------------------------------------------------------------------------------------
+      for C in [0, 32):           rf_x1_thru_x31     l1                 l1                 
+-------------------------------------------------------------------------------------------
+        for C in [0, 16):         rf_x1_thru_x31     rf_x1_thru_x31     l1                 
+-------------------------------------------------------------------------------------------
+          for A in [0, 16):       rf_x1_thru_x31     rf_x1_thru_x31     rf_x1_thru_x31     
+-------------------------------------------------------------------------------------------
+===========================================================================================
+Spatial Loops                                                                              
+===========================================================================================
+            parfor B in [0, 8):                                                            
+-------------------------------------------------------------------------------------------
+```
+
+#### matmul 2048 x 2048
+
+Commands Run:
+
+```
+python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-2048-x-2048.yaml --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml --accelerator=zigzag/inputs/hardware/snitch-cluster-only-integers.yaml
+```
+
+```
+cat outputs/snitch-cluster-only-integers-matmul-2048-x-2048/loop_ordering.txt
+```
+
+Relevant Output:
+
+```
+Loop ordering for matmul_2048_2048
+===========================================================================================
+Temporal Loops                    O                  W                  I                  
+===========================================================================================
+for A in [0, 16):                 l3                 l3                 l3                 
+-------------------------------------------------------------------------------------------
+  for A in [0, 16):               l3                 l3                 l3                 
+-------------------------------------------------------------------------------------------
+    for B in [0, 128):            l3                 l3                 l3                 
+-------------------------------------------------------------------------------------------
+      for C in [0, 128):          rf_x1_thru_x31     l3                 l3                 
+-------------------------------------------------------------------------------------------
+        for C in [0, 16):         rf_x1_thru_x31     l1                 rf_x1_thru_x31     
+-------------------------------------------------------------------------------------------
+          for B in [0, 16):       rf_x1_thru_x31     rf_x1_thru_x31     rf_x1_thru_x31     
+-------------------------------------------------------------------------------------------
+===========================================================================================
+Spatial Loops                                                                              
+===========================================================================================
+            parfor A in [0, 8):                                                            
 -------------------------------------------------------------------------------------------
 ```
 
