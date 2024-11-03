@@ -1,0 +1,15 @@
+- id: 0 
+  name: dispatch_1_matmul_transpose_b_1x1200x400_f64  # name can be used to specify mapping
+  operator_type: MatMul # operator_type can be used to specify mapping
+  equation: O[a][b]+=I[a][c]*W[b][c]
+  dimension_relations: []
+  loop_dims: [A,B,C]
+  loop_sizes: [1, 400, 1200]
+  operand_precision:
+    W: 64
+    I: 64
+    O: 64
+    O_final: 64
+  operand_source:
+    I: 0
+    W: 0
