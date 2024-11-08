@@ -36,8 +36,6 @@
 
 To run ZigZag, you need to specify a **hardware description**, a **workload**, a **default temporal and spatial mapping**, and a folder **location to dump the output**. We specify these file paths as arguments to a python main file that runs ZigZag.
 
-![image-20240626163738939](snitch_cluster_only_integers.png)
-
 - Hardware Description: [snitch-cluster-only-integers.yaml](zigzag/inputs/hardware/snitch-cluster-only-integers.yaml)
 - Workload: [matmul-104-x-104.yaml](zigzag/inputs/workload/matmul-104-x-104.yaml)
 - Default Mapping File: [matmul-104-x-104-empty-mapping.yaml](zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml)
@@ -66,7 +64,13 @@ python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-104-x-10
 cat outputs/snitch-cluster-only-integers-matmul-104-x-104/loop_ordering.txt 
 ```
 
-### III. Example Output:
+### III. Example Run
+
+```
+python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-104-x-104.yaml --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml --accelerator=zigzag/inputs/hardware/snitch-cluster-only-integers.yaml
+```
+
+ZigZag Output:
 
 ```
 python main_zigzag_integration.py --model=zigzag/inputs/workload/matmul-104-x-104.yaml --mapping=zigzag/inputs/mapping/matmul-104-x-104-empty-mapping.yaml --accelerator=zigzag/inputs/hardware/snitch-cluster-only-integers.yaml
@@ -110,7 +114,9 @@ Spatial Loops
 -------------------------------------------------------------------------------------------
 ```
 
-### IV. More Example Runs
+### IV. More Example Runs: Snitch Cluster w/ Integer Computation
+![image-20240626163738939](snitch_cluster_only_integers.png)
+
 
 #### matmul 512 x 512
 
@@ -188,9 +194,11 @@ Spatial Loops
 -------------------------------------------------------------------------------------------
 ```
 
-#### dispatch_1_matmul_transpose_b_1x1200x400_f64
+### IV. More Example Runs: Snitch Cluster w/ Float Computation
 
 ![image-20240626163738939](snitch_cluster_only_floats_quidditch_TCDM.png)
+
+#### dispatch_1_matmul_transpose_b_1x1200x400_f64
 
 Commands Run:
 
@@ -205,29 +213,45 @@ cat outputs/snitch-cluster-only-floats-no-ssrs-dispatch_1_matmul_transpose_b_1x1
 Relevant Output:
 
 ```
-hoodleLoop ordering for dispatch_1_matmul_transpose_b_1x1200x400_f64
+Loop ordering for dispatch_1_matmul_transpose_b_1x1200x400_f64
 =============================================================================================
 Temporal Loops                      O                  W                  I                  
 =============================================================================================
 for C in [0, 5):                    l1                 l3                 l1                 
 ---------------------------------------------------------------------------------------------
-  for B in [0, 5):                  l1                 l3                 l1                 
+  for B in [0, 16):                 l1                 l3                 l1                 
 ---------------------------------------------------------------------------------------------
     for C in [0, 5):                rf_f0_thru_f31     l1                 l1                 
 ---------------------------------------------------------------------------------------------
-      for C in [0, 16):             rf_f0_thru_f31     l1                 l1                 
+      for C in [0, 6):              rf_f0_thru_f31     l1                 rf_f0_thru_f31     
 ---------------------------------------------------------------------------------------------
-        for B in [0, 6):            rf_f0_thru_f31     l1                 rf_f0_thru_f31     
+        for B in [0, 5):            rf_f0_thru_f31     l1                 rf_f0_thru_f31     
 ---------------------------------------------------------------------------------------------
           for B in [0, 5):          rf_f0_thru_f31     l1                 rf_f0_thru_f31     
 ---------------------------------------------------------------------------------------------
 =============================================================================================
 Spatial Loops                                                                                
 =============================================================================================
-            parfor B in [0, 8):                                                              
+            parfor C in [0, 8):                                                              
 ---------------------------------------------------------------------------------------------
             parfor C in [0, 1):                                                              
 ---------------------------------------------------------------------------------------------
 
 ```
+
+#### dispatch_9_matmul_transpose_b_1x161x600_f64
+
+[documented here](tiling-nsnet/dispatch_9_matmul_transpose_b_1x161x600_f64.md)
+
+#### dispatch_0_matmul_transpose_b_1x400x161_f64
+
+[documented here](tiling-nsnet/dispatch_0_matmul_transpose_b_1x400x161_f64.md)
+
+#### dispatch_7_matmul_transpose_b_1x600x400_f64
+
+[documented here](tiling-nsnet/dispatch_7_matmul_transpose_b_1x600x400_f64.md)
+
+#### dispatch_8_matmul_transpose_b_1x600x600_f64
+
+[documented here](tiling-nsnet/dispatch_8_matmul_transpose_b_1x600x600_f64.md)
 
