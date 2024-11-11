@@ -17,7 +17,7 @@ matmul_transpose_b (I : tensor<1x400xf64, W : tensor<1200x400xf64>, O : tensor<1
     for a in [0, 1)
     for b in [0, 400)
     for c in [0, 1200)
-        O[a][b]+=I[a][c]*transpose(W)[b][c]
+                            
 }
 ```
 
@@ -100,9 +100,18 @@ for C in [0, 5):                    l1                 l3                 l1
 ```
 Loop-Dims: [A, B, C]
 Loop-Sizes: [1, 400, 1200]
-Loop-Tiles = Loop-Dims / [1, 16, 5] = [1, 400, 1200]  /  [1,  16, 5] = [1, 25, 240]
+Loop-Tiles = Loop-Sizes / [1, 16, 5] = [1, 400, 1200]  /  [1,  16, 5] = [1, 25, 240]
 Old Loop Order: A, B, C = 0, 1, 2.
 New Loop Order: A, C, B = 0, 2, 1.
+```
+
+BUT when we feed to the upstream mlir tiling function, the transpose part of the operation has not occurred yet - need to pass tile sizes [1, 240, 25], to match the tensor size of `1200x400xf64>` ...
+
+```
+l1Tiles[0] = 0;
+l1Tiles[1] = 240;
+l1Tiles[2] = 25;
+l1Interchange = {0, 2, 1}; 
 ```
 
 ## JSON Summary

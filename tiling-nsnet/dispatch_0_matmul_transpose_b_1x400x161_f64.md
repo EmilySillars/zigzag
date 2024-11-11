@@ -40,10 +40,63 @@ matmul_transpose_b (I : tensor<1x161xf64, W : tensor<400x161xf64>, O : tensor<1x
     W: 0
 ```
 
-
-
 ## ZigZag Run
 
+Commands run:
 
+```
+python main_zigzag_integration.py --model=zigzag/inputs/workload/dispatch_0_matmul_transpose_b_1x400x161_f64.yaml --mapping=zigzag/inputs/mapping/empty-mapping.yaml --accelerator=zigzag/inputs/hardware/snitch-cluster-only-floats-no-ssrs.yaml
+```
+
+```
+cat outputs/snitch-cluster-only-floats-no-ssrs-dispatch_0_matmul_transpose_b_1x400x161_f64/loop_ordering.txt
+```
+
+Output:
+
+```
+Loop ordering for dispatch_0_matmul_transpose_b_1x400x161_f64
+===========================================================================================
+Temporal Loops                    O                  W                  I                  
+===========================================================================================
+for B in [0, 7):                  l1                 l1                 l1                 
+-------------------------------------------------------------------------------------------
+  for C in [0, 5):                rf_f0_thru_f31     l1                 l1                 
+-------------------------------------------------------------------------------------------
+    for C in [0, 5):              rf_f0_thru_f31     l1                 l1                 
+-------------------------------------------------------------------------------------------
+      for C in [0, 2):            rf_f0_thru_f31     l1                 rf_f0_thru_f31     
+-------------------------------------------------------------------------------------------
+        for B in [0, 23):         rf_f0_thru_f31     l1                 rf_f0_thru_f31     
+-------------------------------------------------------------------------------------------
+===========================================================================================
+Spatial Loops                                                                              
+===========================================================================================
+          parfor C in [0, 8):                                                              
+-------------------------------------------------------------------------------------------
+          parfor A in [0, 1):                                                              
+-------------------------------------------------------------------------------------------
+```
+
+## Interpret Results
+
+Since everything fits in L1, don't tile at all?!
+
+No loop interchange either?!
+
+```
+l1Tiles[0] = 0;
+l1Tiles[1] = 0;
+l1Tiles[2] = 0;
+l1Interchange = {0, 1, 2}; 
+```
 
 ## JSON Summary
+
+```
+{
+    "bounds":[[1], [1], [1]],
+    "order":[[0,0], [1,0], [2,0]]
+}
+```
+
