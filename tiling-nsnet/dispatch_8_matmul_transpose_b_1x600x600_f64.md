@@ -17,7 +17,7 @@ matmul_transpose_b (I : tensor<1x600xf64, W : tensor<600x600xf64>, O : tensor<1x
     for a in [0, 1)
     for b in [0, 600)
     for c in [0, 600)
-        O[a][b]+=I[a][c]*transpose(W)[b][c]
+        O[a][b]+=I[a][c]*[b][c]
 }
 ```
 
@@ -88,23 +88,27 @@ Temporal Loops                      O                  W                  I
 =============================================================================================
 for B in [0, 3):                    l1                 l3                 l1                 
 ---------------------------------------------------------------------------------------------
-  for C in [0, 20):                 rf_f0_thru_f31     l3                 l1  
+  for C in [0, 20):                 rf_f0_thru_f31     l3                 l1                 
+---------------------------------------------------------------------------------------------
+    for C in [0, 6):                rf_f0_thru_f31     l1                 l1      
 ```
 
 ```
 loop_dims: [A,B,C]
 loop_sizes: [1, 600, 600]
 new_loop_bounds = [1, 3, 20]
+new_loop_bounds2 = [1, 1, 6]
 tile_sizes = loop_size / loop_bounds = [1, 600, 600] / [1, 3, 20] = [1, 200, 30]
+tile_sizes2 = tile_sizes / loop_bounds2 = [1, 200, 30] / [1, 1, 6] = [1, 1, 5]
 No loop interchange.
 ```
 
-We need to swap the `200` and `30` because of the transpose:
+But Quidditch can do second level tiling! So let's give it the tile sizes when ALL operands are in L1: `[1, 200, 5]`
 
 ```
 l1Tiles[0] = 0;
-l1Tiles[1] = 30;
-l1Tiles[2] = 200;
+l1Tiles[1] = 200;
+l1Tiles[2] = 5;
 l1Interchange = {0, 1, 2}; 
 ```
 
@@ -112,7 +116,7 @@ l1Interchange = {0, 1, 2};
 
 ```
 {
-    "bounds":[[1], [3], [20]],
+    "bounds":[[1], [3], [120]],
     "order":[[0,0], [1,0], [2,0]]
 }
 ```

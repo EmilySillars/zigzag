@@ -4,7 +4,7 @@
   equation: O[a][b]+=I[a][c]*W[b][c]
   dimension_relations: []
   loop_dims: [A,B,C]
-  loop_sizes: [1, 161, 400]
+  loop_sizes: [1, 400, 161]
   operand_precision:
     W: 64
     I: 64

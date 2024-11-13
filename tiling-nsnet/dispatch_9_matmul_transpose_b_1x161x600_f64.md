@@ -16,9 +16,9 @@ outs(%8 : tensor<1x161xf64>) -> tensor<1x161xf64>
 ```
 matmul_transpose_b (I : tensor<1x600xf64, W : tensor<161x600xf64>, O : tensor<1x161xf64>) {
     for a in [0, 1)
-    for b in [0, 600)
-    for c in [0, 161)
-        O[a][b]+=I[a][c]*transpose(W)[b][c]
+    for b in [0, 161)
+    for c in [0, 600)
+        O[a][b]+=I[a][c]*W[b][c]
 }
 ```
 
@@ -31,7 +31,7 @@ matmul_transpose_b (I : tensor<1x600xf64, W : tensor<161x600xf64>, O : tensor<1x
   equation: O[a][b]+=I[a][c]*W[b][c]
   dimension_relations: []
   loop_dims: [A,B,C]
-  loop_sizes: [1, 600, 161] 
+  loop_sizes: [1, 161, 600] 
   operand_precision:
     W: 64
     I: 64
@@ -57,24 +57,24 @@ Loop ordering for dispatch_9_matmul_transpose_b_1x161x600_f64
 =============================================================================================
 Temporal Loops                      O                  W                  I                  
 =============================================================================================
-for B in [0, 6):                    l1                 l3                 l1                 
+for C in [0, 6):                    rf_f0_thru_f31     l3                 l1                 
 ---------------------------------------------------------------------------------------------
-  for B in [0, 4):                  l1                 l1                 l1                 
+  for C in [0, 4):                  rf_f0_thru_f31     l1                 l1                 
 ---------------------------------------------------------------------------------------------
-    for C in [0, 7):                rf_f0_thru_f31     l1                 l1                 
+    for C in [0, 5):                rf_f0_thru_f31     l1                 l1                 
 ---------------------------------------------------------------------------------------------
-      for C in [0, 3):              rf_f0_thru_f31     l1                 rf_f0_thru_f31     
+      for C in [0, 5):              rf_f0_thru_f31     l1                 rf_f0_thru_f31     
 ---------------------------------------------------------------------------------------------
-        for B in [0, 5):            rf_f0_thru_f31     l1                 rf_f0_thru_f31     
+        for B in [0, 3):            rf_f0_thru_f31     l1                 rf_f0_thru_f31     
 ---------------------------------------------------------------------------------------------
-          for B in [0, 5):          rf_f0_thru_f31     l1                 rf_f0_thru_f31     
+          for B in [0, 7):          rf_f0_thru_f31     l1                 rf_f0_thru_f31     
 ---------------------------------------------------------------------------------------------
 =============================================================================================
 Spatial Loops                                                                                
 =============================================================================================
-            parfor C in [0, 7):                                                              
+            parfor B in [0, 7):                                                              
 ---------------------------------------------------------------------------------------------
-            parfor A in [0, 1):                                                              
+            parfor C in [0, 1):                                                              
 ---------------------------------------------------------------------------------------------
 ```
 
@@ -87,22 +87,26 @@ Loop ordering for dispatch_9_matmul_transpose_b_1x161x600_f64
 =============================================================================================
 Temporal Loops                      O                  W                  I                  
 =============================================================================================
-for B in [0, 6):                    l1                 l3                 l1     
+for C in [0, 6):                    rf_f0_thru_f31     l3                 l1                 
+---------------------------------------------------------------------------------------------
+  for C in [0, 4):                  rf_f0_thru_f31     l1                 l1    
 ```
 
 ```
 loop_dims: [A,B,C]
-loop_sizes: [1, 600, 161] 
-new_loop_bounds = [1, 6, 1]
-tile_sizes = loop_sizes / new_loop_bounds = [1, 600, 161] / [1, 6, 1] = [1, 100, 161]
+loop_sizes: [1, 161, 600] 
+new_loop_bounds = [1, 1, 6]
+new_loop_bounds2 = [1, 1, 4]
+tile_sizes = loop_sizes / new_loop_bounds = [1, 161, 600] / [1, 1, 6] = [1, 161, 100]
+tile_sizes2 = tile_sizes / new_loop_bounds2 = [1, 161, 100] / [1, 1, 4] = [1, 161, 25]
 ```
 
-Need to swap `100` and `161` to match tensor  shape `tensor<161x600xf64>`:
+Quidditch does not support second level tiling, so let's just provide tile sizes when ALL operands are in L1: `[1, 161, 25]`
 
 ```
 l1Tiles[0] = 0;
 l1Tiles[1] = 161;
-l1Tiles[2] = 100;
+l1Tiles[2] = 25;
 l1Interchange = {0, 1, 2}; 
 ```
 
@@ -110,7 +114,7 @@ l1Interchange = {0, 1, 2};
 
 ```
 {
-    "bounds":[[1], [6], [1]],
+    "bounds":[[1], [1], [24]],
     "order":[[0,0], [1,0], [2,0]]
 }
 ```
