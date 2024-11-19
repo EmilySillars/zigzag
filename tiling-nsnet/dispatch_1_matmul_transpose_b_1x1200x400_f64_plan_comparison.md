@@ -289,7 +289,7 @@ sh tiling-nsnet-custom-mapping.sh dispatch_1_matmul_transpose_b_1x1200x400_f64 1
 | Name                | Latency Estimation        | Actual Latency |
 | ------------------- | ------------------------- | -------------- |
 | NsNet2              | 196155.0                  | 1318981        |
-| GrapeFruit          | 137664.0                  |                |
+| GrapeFruit          | 137664.0                  | 11104854       |
 | NsNet2 / GrapeFruit | 1.424882322175732 ~ 1.42x |                |
 
 ```
