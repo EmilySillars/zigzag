@@ -1,0 +1,14 @@
+- name: default
+  core_allocation: [1]
+  spatial_mapping:
+    D2:
+      - B, 8
+  temporal_ordering:
+    - [B, 3]
+    - [C, 120]
+    - [C, 5]
+    - [B, 25]
+  memory_operand_links:
+    O: O
+    W: I2
+    I: I1

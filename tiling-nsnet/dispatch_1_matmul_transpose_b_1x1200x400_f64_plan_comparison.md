@@ -2,6 +2,10 @@
 
 [back to landing page](https://github.com/CAPS-UMU/Quidditch/tree/zigzag/zigzag_tiling/grapeFruit/zigzag-tiled-nsnet)
 
+UPDATE: I think I made a mistake. I get a "cannot fit in L1" error when trying to tile this kernel with the ZigZag tilling configuration.
+
+Redo-ing this comparison except with dispatch 8...
+
 Let's compare the output tiling plan to what Quidditch actually does!
 
 ## Linalg Operation
@@ -104,9 +108,9 @@ Recall: `O[a][b]+=I[a][c]*W[b][c]`
  loop_sizes: [1, 1200, 400] 
  
  Zigzag Output:
- new_loop_bounds = [1, 5, 5], new_loop_bounds_2 = [1, 5, 5]
+ new_loop_bounds = [1, 5, 5], new_loop_bounds_2 = [1, 1, 5]
  tile_sizes = loop_size / new_loop_bounds = [1, 1200, 400] / [1, 5, 5] = [1, 240, 80]
- tile_sizes2 = tile_sizes / new_loop_bounds = [1, 240, 80] / [1, 1, 5] = [1, 1, 40]
+ tile_sizes2 = tile_sizes / new_loop_bounds_2 = [1, 240, 80] / [1, 1, 5] = [1, 1, 40]
 
 ```
 
@@ -296,26 +300,3 @@ sh tiling-nsnet-custom-mapping.sh dispatch_1_matmul_transpose_b_1x1200x400_f64 1
 /home/hoppip/Quidditch/toolchain/bin/snitch_cluster.vlt /home/hoppip/Quidditch/build/runtime/samples/nsnet2/NsNet2
 /home/hoppip/Quidditch/toolchain/bin/snitch_cluster.vlt /home/hoppip/Quidditch/build/runtime/samples/grapeFruit/GrapeFruit
 ```
-
-
-
-## old notes ignore
-
-```
- GrapeFruit
-  A is 1      l1Tiles[0]
-  B is 1200   l1Tiles[240]
-  C is 400    l1Tiles[25]
- matmul_transpose_b (I : tensor<1x400xf64, W : tensor<1200x400xf64>, O : tensor<1x1200xf64>) // tile (A, 1) (B, 1200) (C, 400)
- matmul_transpose_b (I : tensor<1x25xf64>, W : tensor<240x25xf64>, O : tensor<1x240xf64>)    // tile (A, 1) (B, 240) (C, 25)
- matmul_transpose_b (I : tensor<1x25xf64>, W:  tensor<30x25xf64>, O : tensor<1x30xf64>)      // tile (A, 1) (B, 30) (C, 1)
- 
- bounds are
- A 1
- B 5
- C 16
- B 8
- B 30
- C 25
-```
-
