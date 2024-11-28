@@ -108,7 +108,7 @@ original loop order: [A, B, C] = [0, 1, 2]
 new loop order: [0, 2, 1]
 ```
 
-But Quidditch can do second level tiling! So let's give it the tile sizes when ALL operands are in L1: `[1, 30, 40]`
+But Quidditch cannot do second level tiling! So let's give it the tile sizes when ALL operands are in L1: `[1, 30, 40]`
 
 ```
 l1Tiles[0] = 0;
